@@ -49,7 +49,7 @@ namespace mmd2timeline.Store
             {
                 if (this.HasKey("PositionOffsetY"))
                     return this["PositionOffsetY"].AsFloat;
-                else return -0.1f;
+                else return 0f;
             }
             set { this["PositionOffsetY"].AsFloat = value; }
         }
@@ -168,7 +168,7 @@ namespace mmd2timeline.Store
                 if (this.HasKey("CameraYScale"))
                     return this["CameraYScale"].AsFloat;
                 else
-                    return 1f;
+                    return 0.9f;
             }
             set
             {

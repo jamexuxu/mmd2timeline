@@ -124,6 +124,7 @@ namespace mmd2timeline
             }
 
             _FocusAtomJSON.choices = targetChoices;
+            _FocusAtomJSON.displayChoices = targetChoices;
             // 选中默认的元素
             //FocusAtomJSON.val = "";
         }
@@ -152,6 +153,7 @@ namespace mmd2timeline
                 _FocusAtom = null;
             }
             _FocusReceiverJSON.choices = receiverChoices;
+            _FocusReceiverJSON.displayChoices = receiverChoices;
             _FocusReceiverJSON.val = noneString;
         }
 
