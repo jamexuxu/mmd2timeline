@@ -721,8 +721,32 @@ namespace mmd2timeline
         bool isMotionResetting = false;
         float transformCheckTime = 0f;
         const float TRANSFORM_MAX_CHECK_TIME = 1f;
+
+        bool isMainUIShowing = false;
+
         public void FixedUpdate()
         {
+            bool shouldResetCamera = (SuperController.singleton.worldUIActivated);
+
+            if (SuperController.singleton.MainHUDVisible && _CameraHelper.IsActive)
+            {
+                _CameraHelper.IsActive = false;
+
+                return;
+            }
+
+            if (shouldResetCamera && !isMainUIShowing)
+            {
+                isMainUIShowing = true;
+                _CameraHelper.RestoreCamera();
+                return;
+            }
+
+            if (!shouldResetCamera && isMainUIShowing)
+            {
+                isMainUIShowing = false;
+            }
+
             if (isMotionResetting) return;
 
             transformCheckTime += Time.fixedDeltaTime;

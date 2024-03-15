@@ -266,6 +266,11 @@ namespace mmd2timeline
             SetDelayRange(0f);
 
             ResetChooser();
+
+            _NavigationRigSnapshot?.Restore();
+
+            SuperController.singleton.ResetMonitorCenterCamera();
+            SuperController.singleton.ResetNavigationRigPositionRotation();
         }
 
         /// <summary>

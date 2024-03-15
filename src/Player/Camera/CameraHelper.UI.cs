@@ -95,7 +95,6 @@ namespace mmd2timeline
             {
                 //  更新位置偏移
                 _CameraSetting.PositionOffsetX = v;
-                UpdatePositionOffset();
                 Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetXJSON);
@@ -105,7 +104,6 @@ namespace mmd2timeline
             {
                 // 更新位置偏移
                 _CameraSetting.PositionOffsetY = v;
-                UpdatePositionOffset();
                 Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetYJSON);
@@ -115,7 +113,6 @@ namespace mmd2timeline
             {
                 // 更新位置偏移
                 _CameraSetting.PositionOffsetZ = v;
-                UpdatePositionOffset();
                 Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetZJSON);
@@ -125,7 +122,6 @@ namespace mmd2timeline
             {
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetX = v;
-                UpdateRotationOffset();
                 Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetXJSON);
@@ -135,7 +131,6 @@ namespace mmd2timeline
             {
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetY = v;
-                UpdateRotationOffset();
                 Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetYJSON);
@@ -145,7 +140,6 @@ namespace mmd2timeline
             {
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetZ = v;
-                UpdateRotationOffset();
                 Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetZJSON);
@@ -189,8 +183,8 @@ namespace mmd2timeline
             //_CameraScaleJSON.valNoCallback = _CameraSetting.CameraScale;
             //_CameraYScaleJSON.valNoCallback = _CameraSetting.CameraYScale;
 
-            UpdatePositionOffset();
-            UpdateRotationOffset();
+            //UpdatePositionOffset();
+            //UpdateRotationOffset();
         }
 
         /// <summary>

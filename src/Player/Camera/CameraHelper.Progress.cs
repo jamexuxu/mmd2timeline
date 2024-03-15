@@ -96,12 +96,19 @@ namespace mmd2timeline
         bool isSetting = false;
         internal void Refresh()
         {
-            if (_progressJSON != null)
+            if (_progressJSON != null && _NavigationRigSnapshot != null)
             {
                 isSetting = true;
 
+                //this.Activate();
+
                 SetProgress(_progressJSON.val);
             }
+        }
+
+        internal void RestoreCamera()
+        {
+            this.Deactivate(true);
         }
 
         /// <summary>

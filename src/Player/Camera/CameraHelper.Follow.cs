@@ -19,8 +19,8 @@ namespace mmd2timeline
         private bool _rotationLock = true;
         private bool _positionLock = true;
 
-        Quaternion _RotationOffset = Quaternion.Euler(0f, 0f, 0f);
-        Vector3 _PositionOffset = Vector3.zero;
+        //Quaternion _RotationOffset = Quaternion.Euler(0f, 0f, 0f);
+        //Vector3 _PositionOffset = Vector3.zero;
 
         Atom _customCameraAtom;
 
@@ -33,17 +33,23 @@ namespace mmd2timeline
         /// <summary>
         /// 更新旋转偏移
         /// </summary>
-        void UpdateRotationOffset()
+        Quaternion _RotationOffset
         {
-            _RotationOffset = Quaternion.Euler(_CameraSetting.RotationOffsetX, _CameraSetting.RotationOffsetY, _CameraSetting.RotationOffsetZ);
+            get
+            {
+                return Quaternion.Euler(_CameraSetting.RotationOffsetX, _CameraSetting.RotationOffsetY, _CameraSetting.RotationOffsetZ);
+            }
         }
 
         /// <summary>
         /// 更新位置偏移
         /// </summary>
-        void UpdatePositionOffset()
+        Vector3 _PositionOffset
         {
-            _PositionOffset = new Vector3(_CameraSetting.PositionOffsetX, _CameraSetting.PositionOffsetY, _CameraSetting.PositionOffsetZ); ;
+            get
+            {
+                return new Vector3(_CameraSetting.PositionOffsetX, _CameraSetting.PositionOffsetY, _CameraSetting.PositionOffsetZ); ;
+            }
         }
 
         /// <summary>
@@ -434,7 +440,10 @@ namespace mmd2timeline
             // 如果已经时激活状态，返回
             if (_isActived) return;
 
-            _NavigationRigSnapshot = NavigationRigSnapshot.Snap();
+            if (_NavigationRigSnapshot == null)
+            {
+                _NavigationRigSnapshot = NavigationRigSnapshot.Snap();
+            }
 
             // 禁用导航
             EnableNavigation(false);
@@ -469,11 +478,11 @@ namespace mmd2timeline
         /// <summary>
         /// 取消激活
         /// </summary>
-        private void Deactivate()
+        private void Deactivate(bool force = false)
         {
-            if (!_isActived) return;
+            if (!_isActived && !force) return;
 
-            //_NavigationRigSnapshot?.Restore();
+            _NavigationRigSnapshot?.Restore();
 
             EnableNavigation(true);
 
@@ -489,7 +498,10 @@ namespace mmd2timeline
 
             _isActived = false;
 
-            Refresh();
+            if (!force)
+            {
+                Refresh();
+            }
         }
 
         /// <summary>
