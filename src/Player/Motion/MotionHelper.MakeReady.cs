@@ -26,11 +26,16 @@ namespace mmd2timeline
         JSONStorableFloat _PositionY;
 
         /// <summary>
+        /// 人物的原始高度
+        /// </summary>
+        float originalHeight = 0.0f;
+
+        /// <summary>
         /// 初始化准备高度
         /// </summary>
         void InitReadyPosition()
         {
-            _PositionY = new JSONStorableFloat(GetParamName("PositionY"), 0f, 0f, 1f);
+            _PositionY = new JSONStorableFloat(GetParamName("PositionY"), 0f, 0f, 1f, false);
             _PositionY.setCallbackFunction = v => SetPosY(v);
         }
 
@@ -79,9 +84,10 @@ namespace mmd2timeline
 
                 return readyPositionY >= perStep;
             });
-            yield return null;
             readyPositionY = 0.0f;
+            originalHeight = 0.0f;
             prepareToReady = false;
+            yield return null;
         }
 
         /// <summary>
@@ -98,8 +104,9 @@ namespace mmd2timeline
             if (readyPositionY <= 0.0f)
             {
                 yield return null;
+                originalHeight = _PersonAtom.mainController.transform.position.y;
                 readyPositionY = READY_HEIGHT;
-                this._PositionY.val += readyPositionY;
+                this._PositionY.val = (readyPositionY + originalHeight);
             }
         }
     }
