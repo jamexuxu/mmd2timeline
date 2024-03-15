@@ -140,41 +140,41 @@ namespace mmd2timeline.Store
             }
         }
 
-        /// <summary>
-        /// 镜头缩放
-        /// </summary>
-        public float CameraScale
-        {
-            get
-            {
-                if (this.HasKey("CameraScale"))
-                    return this["CameraScale"].AsFloat;
-                else
-                    return 0f;
-            }
-            set
-            {
-                this["CameraScale"].AsFloat = value;
-            }
-        }
+        ///// <summary>
+        ///// 镜头缩放
+        ///// </summary>
+        //public float CameraScale
+        //{
+        //    get
+        //    {
+        //        if (this.HasKey("CameraScale"))
+        //            return this["CameraScale"].AsFloat;
+        //        else
+        //            return 0f;
+        //    }
+        //    set
+        //    {
+        //        this["CameraScale"].AsFloat = value;
+        //    }
+        //}
 
-        /// <summary>
-        /// 镜头Y轴缩放
-        /// </summary>
-        public float CameraYScale
-        {
-            get
-            {
-                if (this.HasKey("CameraYScale"))
-                    return this["CameraYScale"].AsFloat;
-                else
-                    return 0.9f;
-            }
-            set
-            {
-                this["CameraYScale"].AsFloat = value;
-            }
-        }
+        ///// <summary>
+        ///// 镜头Y轴缩放
+        ///// </summary>
+        //public float CameraYScale
+        //{
+        //    get
+        //    {
+        //        if (this.HasKey("CameraYScale"))
+        //            return this["CameraYScale"].AsFloat;
+        //        else
+        //            return 1f;
+        //    }
+        //    set
+        //    {
+        //        this["CameraYScale"].AsFloat = value;
+        //    }
+        //}
 
         /// <summary>
         /// 对比两个镜头配置是否一致

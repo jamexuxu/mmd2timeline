@@ -1078,14 +1078,7 @@ namespace mmd2timeline
 
                     _playStatusJSON.val = true;
 
-                    if (!config.CameraActive)
-                    {
-                        _CameraHelper.DisableNavigation(false);
-                    }
-                    else
-                    {
-                        _CameraHelper.DisableNavigation();
-                    }
+                    _CameraHelper.EnableNavigation(!config.CameraActive);
                 }
             }
             else
@@ -1096,7 +1089,7 @@ namespace mmd2timeline
                     _playStatusJSON.val = false;
 
                     _UIPlayButton.buttonText.text = sPlay;
-                    _CameraHelper.DisableNavigation(false);
+                    _CameraHelper.EnableNavigation(true);
                 }
             }
             return onPlaying;

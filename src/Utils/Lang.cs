@@ -508,7 +508,8 @@ namespace mmd2timeline
             this["Evaluation1"] = "评估版（1）";
             this["Evaluation2"] = "评估版（2）";
             this["Expression Scale"] = "表情缩放";
-            this["Y Axis Scale"] = "Y轴缩放";
+            this["Camera Distance Scale"] = "镜头距离缩放";
+            this["Camera Height Scale"] = "镜头高度缩放";
         }
     }
 }

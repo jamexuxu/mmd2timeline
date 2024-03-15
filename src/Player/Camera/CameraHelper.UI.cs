@@ -52,9 +52,9 @@ namespace mmd2timeline
 
         JSONStorableFloat _RotationOffsetZJSON;
 
-        JSONStorableFloat _CameraScaleJSON;
+        //JSONStorableFloat _CameraScaleJSON;
 
-        JSONStorableFloat _CameraYScaleJSON;
+        //JSONStorableFloat _CameraYScaleJSON;
 
         /// <summary>
         /// 初始化CameraUI
@@ -76,7 +76,8 @@ namespace mmd2timeline
             _progressJSON = self.SetupSliderFloat("Camera Progress", Lang.Get("Camera Progress"), 0f, 0f, 0f, v =>
             {
                 // 更新镜头进度
-                _MmdCamera.SetPlayPos((double)v);
+                //_MmdCamera.SetPlayPos((double)v);
+                Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_progressJSON);
 
@@ -85,6 +86,7 @@ namespace mmd2timeline
             {
                 // 更新镜头延迟
                 _CameraSetting.TimeDelay = v;
+                Refresh();
             };
             _SettingsUI.Elements.Add(_timeDelayJSON);
 
@@ -94,15 +96,17 @@ namespace mmd2timeline
                 //  更新位置偏移
                 _CameraSetting.PositionOffsetX = v;
                 UpdatePositionOffset();
+                Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetXJSON);
 
             // 位置偏移Y
-            _PositionOffsetYJSON = self.SetupSliderFloat("Position Offset Y", -0.1f, -2f, 2f, v =>
+            _PositionOffsetYJSON = self.SetupSliderFloat("Position Offset Y", 0f, -2f, 2f, v =>
             {
                 // 更新位置偏移
                 _CameraSetting.PositionOffsetY = v;
                 UpdatePositionOffset();
+                Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetYJSON);
 
@@ -112,6 +116,7 @@ namespace mmd2timeline
                 // 更新位置偏移
                 _CameraSetting.PositionOffsetZ = v;
                 UpdatePositionOffset();
+                Refresh();
             }, rightSide, "F4");
             _SettingsUI.Elements.Add(_PositionOffsetZJSON);
 
@@ -121,6 +126,7 @@ namespace mmd2timeline
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetX = v;
                 UpdateRotationOffset();
+                Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetXJSON);
 
@@ -130,6 +136,7 @@ namespace mmd2timeline
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetY = v;
                 UpdateRotationOffset();
+                Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetYJSON);
 
@@ -139,24 +146,27 @@ namespace mmd2timeline
                 // 更新方向偏移
                 _CameraSetting.RotationOffsetZ = v;
                 UpdateRotationOffset();
+                Refresh();
             }, rightSide);
             _SettingsUI.Elements.Add(_RotationOffsetZJSON);
 
-            // 镜头缩放
-            _CameraScaleJSON = self.SetupSliderFloat("Camera Scale", 0f, -0.5f, 0.5f, v =>
-            {
-                // 更新镜头缩放
-                _CameraSetting.CameraScale = v;
-            }, rightSide, "F4");
-            _SettingsUI.Elements.Add(_CameraScaleJSON);
+            //// 镜头缩放
+            //_CameraScaleJSON = self.SetupSliderFloat("Camera Scale", 0f, -0.5f, 0.5f, v =>
+            //{
+            //    // 更新镜头缩放
+            //    _CameraSetting.CameraScale = v;
+            //    Refresh();
+            //}, rightSide, "F4");
+            //_SettingsUI.Elements.Add(_CameraScaleJSON);
 
-            // 镜头Y轴缩放
-            _CameraYScaleJSON = self.SetupSliderFloat("Y Axis Scale", 1f, 0.1f, 1.5f, v =>
-            {
-                // 更新镜头缩放
-                _CameraSetting.CameraYScale = v;
-            }, rightSide, "F4");
-            _SettingsUI.Elements.Add(_CameraYScaleJSON);
+            //// 镜头Y轴缩放
+            //_CameraYScaleJSON = self.SetupSliderFloat("Y Axis Scale", 1f, 0.1f, 1.5f, v =>
+            //{
+            //    // 更新镜头缩放
+            //    _CameraSetting.CameraYScale = v;
+            //    Refresh();
+            //}, rightSide, "F4");
+            //_SettingsUI.Elements.Add(_CameraYScaleJSON);
 
             InitSettingValues();
         }
@@ -176,8 +186,8 @@ namespace mmd2timeline
             _RotationOffsetXJSON.valNoCallback = _CameraSetting.RotationOffsetX;
             _RotationOffsetYJSON.valNoCallback = _CameraSetting.RotationOffsetY;
             _RotationOffsetZJSON.valNoCallback = _CameraSetting.RotationOffsetZ;
-            _CameraScaleJSON.valNoCallback = _CameraSetting.CameraScale;
-            _CameraYScaleJSON.valNoCallback = _CameraSetting.CameraYScale;
+            //_CameraScaleJSON.valNoCallback = _CameraSetting.CameraScale;
+            //_CameraYScaleJSON.valNoCallback = _CameraSetting.CameraYScale;
 
             UpdatePositionOffset();
             UpdateRotationOffset();

@@ -222,6 +222,7 @@ namespace mmd2timeline
             {
                 // 设置时间延迟
                 SetTimeDelay(v);
+                SetProgress(_ProgressJSON.val);
             }, rightSide);
             _MotionSettingsUI.Elements.Add(_TimeDelayJSON);
 

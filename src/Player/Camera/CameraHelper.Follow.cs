@@ -177,7 +177,7 @@ namespace mmd2timeline
             try
             {
                 // 如果不启用，直接返回
-                if (!_isActive)
+                if (!_isActive && !isSetting)
                 {
                     Deactivate();
                     return;
@@ -186,9 +186,9 @@ namespace mmd2timeline
                 Transform positionRef = null;
                 //JSONStorableFloat scaleJSON = null;
                 //var personScale = 1f;
-                var positionScale = _CameraSetting.CameraScale;
+                var distanceScale = config.CameraZAxisScale;
 
-                var heightScale = _CameraSetting.CameraYScale;
+                var heightScale = config.CameraYAxisScale;
 
                 if (_positionReferenceAtom != null)
                 {
@@ -206,7 +206,7 @@ namespace mmd2timeline
                     //}
                 }
 
-                if (config.UseWindowCamera && WindowCamera != null)
+                if (!isSetting && config.UseWindowCamera && WindowCamera != null)
                 {
                     if (!(config.UseOriginalCamera || (config.CameraPositionSmoothing <= 0f && config.CameraRotationSmoothing <= 0f && !_FocusOnAtom)))
                     {
@@ -227,7 +227,7 @@ namespace mmd2timeline
                     _CameraTransform.position += _PositionOffset;
                     _CameraTransform.rotation *= _RotationOffset;
 
-                    UpdatePosition(_CameraTransform, positionRef, positionScale, heightScale);
+                    UpdatePosition(_CameraTransform, positionRef, distanceScale, heightScale);
 
                     if (config.CameraFOVEnabled)
                     {
@@ -238,7 +238,7 @@ namespace mmd2timeline
                 else
                 {
                     // 如果使用自定义相机原子模式并且自定义相机原子不为空
-                    if (config.UseCustomCameraAtom && _customCameraAtom != null)
+                    if (!isSetting && config.UseCustomCameraAtom && _customCameraAtom != null)
                     {
                         //_cameraAtom.mainController.control.SetPositionAndRotation(position, rotation);
                         _customCameraAtom.mainController.control.position = position;
@@ -250,7 +250,7 @@ namespace mmd2timeline
                         _customCameraAtom.mainController.control.position += _PositionOffset;
                         _customCameraAtom.mainController.control.rotation *= _RotationOffset;
 
-                        UpdatePosition(_customCameraAtom.mainController.control, positionRef, positionScale, heightScale);
+                        UpdatePosition(_customCameraAtom.mainController.control, positionRef, distanceScale, heightScale);
                     }
                     else
                     {
@@ -267,7 +267,7 @@ namespace mmd2timeline
                             NavigationRig.rotation = navigationRigRotation;
                         }
 
-                        UpdatePosition(NavigationRig, positionRef, positionScale, heightScale);
+                        UpdatePosition(NavigationRig, positionRef, distanceScale, heightScale);
                     }
 
                     if (config.CameraFOVEnabled)
@@ -276,6 +276,7 @@ namespace mmd2timeline
                     }
                     SuperController.singleton.MonitorCenterCamera.orthographic = orthographic;
                 }
+                isSetting = false;
             }
             catch (Exception e)
             {
@@ -283,7 +284,7 @@ namespace mmd2timeline
             }
         }
 
-        private void UpdatePosition(Transform target, Transform positionRef, float positionScale, float heightScale)
+        private void UpdatePosition(Transform target, Transform positionRef, float distanceScale, float heightScale)
         {
             if (positionRef != null)
             {
@@ -291,8 +292,8 @@ namespace mmd2timeline
             }
 
             var heightCorrection = target.position;
-            heightCorrection.y *= heightScale;
-            heightCorrection.z += heightCorrection.z * positionScale;
+            heightCorrection.y += heightCorrection.y * heightScale;
+            heightCorrection.z += heightCorrection.z * distanceScale;
             target.position = heightCorrection;
         }
 
@@ -355,37 +356,37 @@ namespace mmd2timeline
         /// <summary>
         /// 禁用导航
         /// </summary>
-        /// <param name="disable"></param>
-        internal void DisableNavigation(bool disable = true)
+        /// <param name="enable"></param>
+        internal void EnableNavigation(bool enable = true)
         {
             // 未启用镜头时，如果要禁用镜头，跳过处理
-            if (disable && (!config.EnableCamera || !HasMotion))
+            if (!enable && (!config.EnableCamera || !HasMotion))
                 return;
 
             if (config.UseWindowCamera)
             {
-                SetCameraOn(disable);
+                SetCameraOn(!enable);
             }
             else
             {
                 // 如果状态一致跳过处理
-                if (SuperController.singleton.navigationDisabled == disable)
+                if (SuperController.singleton.navigationDisabled != enable)
                     return;
 
                 // 如果是要禁用导航，则重置导航装置的位置和角度
-                if (disable)
+                if (!enable)
                 {
                     SuperController.singleton.ResetNavigationRigPositionRotation();
                 }
 
                 // 只有镜头处于启用状态才能禁用导航
-                if (disable && !_isActive) { return; }
+                if (!enable && !_isActive) { return; }
 
                 if (GlobalSceneOptions.singleton != null)
                 {
-                    GlobalSceneOptions.singleton.disableNavigation = disable;
+                    GlobalSceneOptions.singleton.disableNavigation = !enable;
                 }
-                SuperController.singleton.disableNavigation = disable;
+                SuperController.singleton.disableNavigation = !enable;
 
                 OnCameraActivateStatusChanged?.Invoke(this, SuperController.singleton.navigationDisabled);
 
@@ -436,7 +437,7 @@ namespace mmd2timeline
             _NavigationRigSnapshot = NavigationRigSnapshot.Snap();
 
             // 禁用导航
-            DisableNavigation();
+            EnableNavigation(false);
 
             // 监控设备没有被激活
             var offsetStartRotation = !SuperController.singleton.MonitorRig.gameObject.activeSelf;
@@ -472,9 +473,9 @@ namespace mmd2timeline
         {
             if (!_isActived) return;
 
-            _NavigationRigSnapshot?.Restore();
+            //_NavigationRigSnapshot?.Restore();
 
-            DisableNavigation(false);
+            EnableNavigation(true);
 
             if (_previousWorldScale > 0f)
             {
@@ -487,6 +488,8 @@ namespace mmd2timeline
             _startRotationOffset = Quaternion.identity;
 
             _isActived = false;
+
+            Refresh();
         }
 
         /// <summary>

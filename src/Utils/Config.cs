@@ -291,6 +291,50 @@ namespace mmd2timeline
         }
 
         /// <summary>
+        /// 全局镜头Z轴缩放
+        /// </summary>
+        public float CameraZAxisScale
+        {
+            get
+            {
+                if (this.HasKey("CameraZAxisScale"))
+                    return this["CameraZAxisScale"].AsFloat;
+                else
+                    return 0f;
+            }
+            set
+            {
+                if (this.CameraZAxisScale != value)
+                {
+                    this["CameraZAxisScale"].AsFloat = value;
+                    this.Save();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 全局镜头Y轴缩放
+        /// </summary>
+        public float CameraYAxisScale
+        {
+            get
+            {
+                if (this.HasKey("CameraYAxisScale"))
+                    return this["CameraYAxisScale"].AsFloat;
+                else
+                    return 0f;
+            }
+            set
+            {
+                if (this.CameraYAxisScale != value)
+                {
+                    this["CameraYAxisScale"].AsFloat = value;
+                    this.Save();
+                }
+            }
+        }
+
+        /// <summary>
         /// 是否使用窗口摄像机
         /// </summary>
         public bool UseWindowCamera

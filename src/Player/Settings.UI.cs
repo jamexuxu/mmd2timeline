@@ -471,6 +471,18 @@ namespace mmd2timeline
 
             _CameraControlUI.Add(SetupSliderFloat(config.CameraRotationSmoothing, "Camera Rotation Smoothing", dft.CameraRotationSmoothing, 0f, 1f, (v) => config.CameraRotationSmoothing = v, RightSide, "F4"));
 
+            _CameraControlUI.Add(SetupSliderFloat(config.CameraZAxisScale, "Camera Distance Scale", dft.CameraZAxisScale, -1f, 1f, (v) =>
+            {
+                config.CameraZAxisScale = v;
+                CameraHelper.GetInstance().Refresh();
+            }, RightSide, "F4"));
+
+            _CameraControlUI.Add(SetupSliderFloat(config.CameraYAxisScale, "Camera Height Scale", dft.CameraYAxisScale, -1f, 1f, (v) =>
+            {
+                config.CameraYAxisScale = v;
+                CameraHelper.GetInstance().Refresh();
+            }, RightSide, "F4"));
+
             //_CameraControlUI.Add(SetupToggle(config.DeactiveCameraWhenMainHUDOpened, "Deactive when MainHUD Opened", dft.DeactiveCameraWhenMainHUDOpened, (v) => config.DeactiveCameraWhenMainHUDOpened = v, RightSide));
 
 
