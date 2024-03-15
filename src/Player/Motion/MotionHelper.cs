@@ -882,8 +882,11 @@ namespace mmd2timeline
         /// <param name="val"></param>
         void ForceDisableIK(bool val)
         {
+            _MotionSetting.ForceDisableIK = val;
             if (_MmdPersonGameObject == null) return;
             _MmdPersonGameObject.ForceDisableIK = val;
+
+            ReUpdateMotion();
         }
 
         /// <summary>

@@ -34,6 +34,23 @@ namespace mmd2timeline.Store
         }
 
         /// <summary>
+        /// 强制关闭IK
+        /// </summary>
+        public bool ForceDisableIK
+        {
+            get
+            {
+                if (this.HasKey("ForceDisableIK"))
+                    return this["ForceDisableIK"].AsBool;
+                else return false;
+            }
+            set
+            {
+                this["ForceDisableIK"].AsBool = value;
+            }
+        }
+
+        /// <summary>
         /// 忽略脸部
         /// </summary>
         public bool IgnoreFace

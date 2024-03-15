@@ -88,6 +88,11 @@ namespace mmd2timeline
         JSONStorableFloat _ExpressionScaleJSON;
 
         /// <summary>
+        /// 强制关闭IK
+        /// </summary>
+        JSONStorableBool _forceDisableIK;
+
+        /// <summary>
         /// 开启高跟
         /// </summary>
         JSONStorableBool _EnableHeelJSON;
@@ -368,6 +373,7 @@ namespace mmd2timeline
 
                 heelSettingsGroup.RefreshView(v);
                 UpdateEnableHighHeel();
+                _MotionSettingsUI.RefreshView();
             }, rightSide);
             self.RegisterBool(_EnableHeelJSON);
             _MotionSettingsUI.OuterElements.Add(_EnableHeelJSON);
@@ -399,16 +405,16 @@ namespace mmd2timeline
 
             #endregion
 
+            // 强制关闭IK
+            _forceDisableIK = SetupToggle(self, "Force Disable IK", false, ForceDisableIK, rightSide);
+            _MotionSettingsUI.OuterElements.Add(_forceDisableIK);
+
             // 关闭下半身骨骼
             _CloseLowerBonesJSON = SetupToggle(self, "Close Lower Bones", false, v =>
             {
                 CloseLowerBones(v);
             }, rightSide);
             _MotionSettingsUI.OuterElements.Add(_CloseLowerBonesJSON);
-
-            // 强制关闭IK
-            var forceDisableIK = SetupToggle(self, "Force Disable IK", false, ForceDisableIK, rightSide);
-            _MotionSettingsUI.OuterElements.Add(forceDisableIK);
 
             _MotionSettingsUI.RefreshView();
         }
@@ -510,6 +516,9 @@ namespace mmd2timeline
             {
                 _ExpressionScaleJSON.val = _MotionSetting.ExpressionScale;
             }
+
+            _forceDisableIK.val = _MotionSetting.ForceDisableIK;
+
             _UseAllJointsSettingsJSON.val = _MotionSetting.UseAllJointsSettings;
 
             // 如果使用全部关节设置
