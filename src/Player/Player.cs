@@ -1287,6 +1287,8 @@ namespace mmd2timeline
             }
             //yield return null;//new WaitForSeconds(1);
             //_cameraActiveJSON.val = false;
+
+            _ProgressHelper.SetProgress(0, true);
         }
 
         /// <summary>
