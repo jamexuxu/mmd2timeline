@@ -163,9 +163,9 @@ namespace mmd2timeline
         internal void SetAudioSource(Atom atom)
         {
             // 如果之前有音频源并且在播放，停止播放
-            if (_audioSource != null && _audioSource.isPlaying)
+            if (_AudioSource != null && _AudioSource.isPlaying)
             {
-                _audioSource.Stop();
+                _AudioSource.Stop();
             }
 
             _audioSource = atom?.GetComponentInChildren<AudioSource>();
