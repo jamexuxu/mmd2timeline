@@ -1033,6 +1033,9 @@ namespace mmd2timeline
                                 }
                             }
 
+                            // 增加设定的技术人物Y轴高度
+                            position.y += config.BaseCenterHeight;
+
                             if (DazBoneMapping.armBones.Contains(bonename))
                             {
                                 if (DazBoneMapping.IsRightSideBone(bonename))

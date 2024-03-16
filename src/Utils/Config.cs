@@ -492,6 +492,27 @@ namespace mmd2timeline
         }
 
         /// <summary>
+        /// 基础人物Y轴
+        /// </summary>
+        public float BaseCenterHeight
+        {
+            get
+            {
+                if (this.HasKey("BaseCenterHeight"))
+                    return this["BaseCenterHeight"].AsFloat;
+                else return 0f;
+            }
+            set
+            {
+                if (this.BaseCenterHeight != value)
+                {
+                    this["BaseCenterHeight"].AsFloat = value;
+                    this.Save();
+                }
+            }
+        }
+
+        /// <summary>
         /// 全局动作缩放
         /// </summary>
         public float GlobalMotionScale

@@ -510,6 +510,7 @@ namespace mmd2timeline
             this["Expression Scale"] = "表情缩放";
             this["Camera Distance Scale"] = "镜头距离缩放";
             this["Camera Height Scale"] = "镜头高度缩放";
+            this["Base Center Height"] = "基础中心高度";
         }
     }
 }

@@ -326,6 +326,14 @@ namespace mmd2timeline
         {
             CreateTitleUI("Motion Settings", LeftSide);
 
+            SetupSliderFloat(config.BaseCenterHeight, "Base Center Height", dft.BaseCenterHeight, -1f, 1f, v =>
+            {
+                config.BaseCenterHeight = v;
+
+                // 更新动作
+                MotionHelperGroup.GetInstance().ReUpdateMotion();
+            }, LeftSide, "F4");
+
             SetupSliderFloat(config.GlobalMotionScale, "Generic Motion Scale", dft.GlobalMotionScale, 0.1f, 2f, v =>
             {
                 config.GlobalMotionScale = v;
