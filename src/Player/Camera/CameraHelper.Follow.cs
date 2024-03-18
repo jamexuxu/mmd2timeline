@@ -225,7 +225,12 @@ namespace mmd2timeline
                     //_CameraTransform.SetPositionAndRotation(position, rotation);
                     _CameraTransform.position = position;
 
-                    if (!FocusOn(position, rotation.GetUp()))
+                    var focusRotation = FocusOn(position, rotation.GetUp());
+                    if (focusRotation != Quaternion.identity)
+                    {
+                        _CameraTransform.rotation = focusRotation;
+                    }
+                    else
                     {
                         _CameraTransform.rotation = rotation;
                     }
@@ -249,7 +254,12 @@ namespace mmd2timeline
                         //_cameraAtom.mainController.control.SetPositionAndRotation(position, rotation);
                         _customCameraAtom.mainController.control.position = position;
 
-                        if (!FocusOn(position, rotation.GetUp()))
+                        var focusRotation = FocusOn(position, rotation.GetUp());
+                        if (focusRotation != Quaternion.identity)
+                        {
+                            _customCameraAtom.mainController.control.rotation = focusRotation;
+                        }
+                        else
                         {
                             _customCameraAtom.mainController.control.rotation = rotation;
                         }
@@ -267,7 +277,12 @@ namespace mmd2timeline
                             NavigationRig.position = navigationRigPosition;
                         }
 
-                        if (!FocusOn(position, rotation.GetUp()) && _rotationLock)
+                        var focusRotation = FocusOn(position, rotation.GetUp());
+                        if (focusRotation != Quaternion.identity)
+                        {
+                            NavigationRig.rotation = focusRotation;
+                        }
+                        else
                         {
                             var navigationRigRotation = GetRotation(position, rotation, NavigationRig);
                             NavigationRig.rotation = navigationRigRotation;

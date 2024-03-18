@@ -160,11 +160,11 @@ namespace mmd2timeline
         /// <summary>
         /// 聚焦
         /// </summary>
-        bool FocusOn(Vector3 position, Vector3 up, string tagetId = null)
+        Quaternion FocusOn(Vector3 position, Vector3 up, string tagetId = null)
         {
             if (!_FocusOnAtom)
             {
-                return false;
+                return Quaternion.identity;
             }
 
             if (_FocusAtom == null)
@@ -181,29 +181,29 @@ namespace mmd2timeline
 
                 var target = _FocusAtom.freeControllers.FirstOrDefault(c => c.name == tagetId);//.GetStorableByID(FocusReceiverJSON.val).transform.position;
 
-                // 如果是VR模式，则主动计算镜头方向（因为FocusOnController方法在VR模式有向右偏移35度）
-                if (config.IsInVR)
-                {
-                    var focusRotation = GetFocusOnRotation(position, up, target);
-                    var rotation = GetRotation(position, focusRotation, NavigationRig);
-                    NavigationRig.rotation = rotation;
-                }
-                else
-                {
-                    if (config.UseWindowCamera)
-                    {
-                        _CameraTransform.LookAt(target.transform);
-                    }
-                    else
-                    {
-                        SuperController.singleton.FocusOnController(target);
-                    }
-                }
+                //// 如果是VR模式，则主动计算镜头方向（因为FocusOnController方法在VR模式有向右偏移35度）
+                //if (config.IsInVR)
+                //{
+                var focusRotation = GetFocusOnRotation(position, up, target);
+                var rotation = GetRotation(position, focusRotation, NavigationRig);
+                //    NavigationRig.rotation = rotation;
+                //}
+                //else
+                //{
+                //    if (config.UseWindowCamera)
+                //    {
+                //        _CameraTransform.LookAt(target.transform);
+                //    }
+                //    else
+                //    {
+                //        SuperController.singleton.FocusOnController(target);
+                //    }
+                //}
 
-                return true;
+                return rotation;
             }
 
-            return false;
+            return Quaternion.identity;
         }
 
         Vector3 targetPastPosition = Vector3.zero;
