@@ -511,6 +511,9 @@ namespace mmd2timeline
             this["Camera Distance Scale"] = "镜头距离缩放";
             this["Camera Height Scale"] = "镜头高度缩放";
             this["Base Center Height"] = "基础中心高度";
+            this["Other Settings"] = "其他设置";
+            this["Enable Sleeping"] = "允许休眠";
+            this["If this option is enabled, the game will pause after running in the background for a while (About 10s). It may help you save a bit power."] = "如果启用该选项，游戏将在后台运行一段时间后暂停（约10秒）。这可能可以帮你节省一点电。";
         }
     }
 }

@@ -1259,6 +1259,29 @@ namespace mmd2timeline
         }
 
         /// <summary>
+        /// 允许游戏休眠
+        /// </summary>
+        public bool EnableSleepWhenRunInBackground
+        {
+            get
+            {
+                if (this.HasKey("EnableSleepWhenRunInBackground"))
+                {
+                    return this["EnableSleepWhenRunInBackground"].AsBool;
+                }
+                else return false;
+            }
+            set
+            {
+                if (this.EnableSleepWhenRunInBackground != value)
+                {
+                    this["EnableSleepWhenRunInBackground"].AsBool = value;
+                    this.Save();
+                }
+            }
+        }
+
+        /// <summary>
         /// 重置所有设置
         /// </summary>
         public void ResetAll()

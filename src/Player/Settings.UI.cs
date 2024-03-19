@@ -46,6 +46,7 @@ namespace mmd2timeline
             InitShortcutKeyUI();
             //InitTriggerUI();
             InitLanguageUI();
+            InitOtherSettingsUI();
             Utils.SetupButton(this, Lang.Get("Reset All Settings To Default"), () =>
             {
                 try
@@ -96,6 +97,21 @@ namespace mmd2timeline
             textInfo.text.alignment = TextAnchor.MiddleCenter;
 
             Utils.SetupSpacer(this, 10f, RightSide);
+        }
+
+        /// <summary>
+        /// 初始化其他设置UI
+        /// </summary>
+        void InitOtherSettingsUI()
+        {
+            CreateTitleUI("Other Settings", LeftSide);
+
+            SetupToggle(config.EnableSleepWhenRunInBackground, "Enable Sleeping", dft.EnableSleepWhenRunInBackground, v => config.EnableSleepWhenRunInBackground = v, LeftSide);
+
+            var textInfo = Utils.SetupInfoTextNoScroll(this, Lang.Get("If this option is enabled, the game will pause after running in the background for a while (About 10s). It may help you save a bit power."), 130, LeftSide);
+            //textInfo.text.alignment = TextAnchor.MiddleCenter;
+
+            Utils.SetupSpacer(this, 10f, LeftSide);
         }
 
         ///// <summary>
@@ -281,7 +297,7 @@ namespace mmd2timeline
 
             Utils.SetupSpacer(this, 10f, RightSide);
         }
-
+        JSONStorableStringChooser _syncMode;
         /// <summary>
         /// 初始化通用设置UI
         /// </summary>
@@ -295,7 +311,7 @@ namespace mmd2timeline
             //SetupStaticEnumsChooser<MotionEngine>(MotionEngine.GetName(config.MotionEngineMode), "Motion Engine", MotionEngine.Names, MotionEngine.GetName(dft.MotionEngineMode), RightSide, v => config.MotionEngineMode = MotionEngine.GetValue(v));
 
             // 同步模式选择
-            SetupEnumsChooser<ProgressSyncMode>(ProgressSyncMode.GetName(config.SyncMode), "Sync Mode", ProgressSyncMode.Names, ProgressSyncMode.GetName(dft.SyncMode), RightSide, m =>
+            _syncMode = SetupEnumsChooser<ProgressSyncMode>(ProgressSyncMode.GetName(config.SyncMode), "Sync Mode", ProgressSyncMode.Names, ProgressSyncMode.GetName(dft.SyncMode), RightSide, m =>
             {
                 config.SyncMode = ProgressSyncMode.GetValue(m);
             });

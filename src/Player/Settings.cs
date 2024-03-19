@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using static SuperController;
+using UnityEngine;
 
 namespace mmd2timeline
 {
@@ -49,6 +49,62 @@ namespace mmd2timeline
                 }
                 return _WindowCameraAtom;
             }
+        }
+
+        #region 休眠处理相关的值
+        /// <summary>
+        /// 休眠前等待的秒数
+        /// </summary>
+        const float waitSleepSeconds = 10f;
+        /// <summary>
+        /// 等待休眠的秒数
+        /// </summary>
+        float waitingSleepSeconds = 0f;
+        /// <summary>
+        /// 休眠前的音频播放状态
+        /// </summary>
+        bool audioPlaying = false;
+        #endregion
+
+        public void Update()
+        {
+            #region 处理允许休眠的情况
+            if (config.EnableSleepWhenRunInBackground)
+            {
+                if (Application.isFocused)
+                {
+                    if (!Application.runInBackground)
+                    {
+                        Application.runInBackground = true;
+
+                        if (audioPlaying)
+                        {
+                            AudioPlayHelper.GetInstance().Play();
+                        }
+                    }
+                    waitingSleepSeconds = 0f;
+                }
+                else
+                {
+                    if (Application.runInBackground)
+                    {
+                        waitingSleepSeconds += Time.deltaTime;
+
+                        if (waitingSleepSeconds > waitSleepSeconds)
+                        {
+                            audioPlaying = AudioPlayHelper.GetInstance().IsPlaying;
+
+                            if (audioPlaying)
+                            {
+                                AudioPlayHelper.GetInstance().Stop();
+                            }
+
+                            Application.runInBackground = false;
+                        }
+                    }
+                }
+            }
+            #endregion
         }
 
         public override void OnDestroy()
