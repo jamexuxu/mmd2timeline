@@ -728,7 +728,7 @@ namespace mmd2timeline
         {
             bool shouldResetCamera = (SuperController.singleton.worldUIActivated);
 
-            if (SuperController.singleton.MainHUDVisible && _CameraHelper.IsActive)
+            if (config.MainHUDVisible && _CameraHelper.IsActive)
             {
                 _CameraHelper.IsActive = false;
 
