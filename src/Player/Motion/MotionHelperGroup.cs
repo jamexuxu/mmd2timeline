@@ -1,8 +1,7 @@
-﻿using mmd2timeline.Store;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace mmd2timeline
 {
@@ -243,6 +242,60 @@ namespace mmd2timeline
                 pair.Value.SetPersonAllJointsMaxVelocity(v);
             }
         }
+
+        /// <summary>
+        /// 整理人物
+        /// </summary>
+        /// <param name="reloadMotions"></param>
+        /// <returns></returns>
+        internal IEnumerator TidyPersons(bool reloadMotions = false, bool init = false)
+        {
+            // 跳一帧
+            yield return null;
+            foreach (var pair in _group)
+            {
+                var item = pair.Value;
+
+                if (reloadMotions)
+                {
+                    yield return item.ReloadMotions(3, init: true);
+                }
+
+                for (int i = 0; i < 30; i++)
+                    yield return null;
+
+                yield return item.SetPersonOff(init);
+
+                for (int i = 0; i < 30; i++)
+                    yield return null;
+
+                yield return item.SetPersonOn(init);
+            }
+            yield return null;
+        }
+
+        /// <summary>
+        /// SetPersonOn
+        /// </summary>
+        internal IEnumerator SetPersonOn(bool init = false)
+        {
+            foreach (var pair in _group)
+            {
+                yield return pair.Value.SetPersonOn(init);
+            }
+        }
+
+        /// <summary>
+        /// SetPersonOff
+        /// </summary>
+        internal IEnumerator SetPersonOff(bool init = false)
+        {
+            foreach (var pair in _group)
+            {
+                yield return pair.Value.SetPersonOff(init);
+            }
+        }
+
         ///// <summary>
         ///// 所有人物进行准备
         ///// </summary>

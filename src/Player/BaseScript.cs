@@ -13,7 +13,9 @@ namespace mmd2timeline
     {
         public const string PLUGIN_NAME = "MMD2TimelinePlayer";
 
-        public const string VERSION = "1.4f2a";
+        public const string VERSION = "1.5";
+
+        public const string VERSION_TIPS = "";
 
         /// <summary>
         /// 获取插件的版本号
@@ -72,7 +74,7 @@ namespace mmd2timeline
         {
             Lang.Init(PluginPath);
 
-            Utils.OnInitUI(this, CreateAllUIElement);
+            Utils.OnInitUI(CreateAllUIElement, this);
 
             InitFullWidthUI();
         }

@@ -1,5 +1,4 @@
-﻿using MacGruber;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace mmd2timeline
 {
@@ -66,14 +65,14 @@ namespace mmd2timeline
 
             _SettingsUI = new GroupUI(self);
 
-            var toggleJSON = self.SetupToggle("Show Camera Settings", Lang.Get("Show Camera Settings"), false, v =>
+            var toggleJSON = self.SetupToggle("Show Camera Settings", false, v =>
             {
                 _SettingsUI?.RefreshView(v);
             }, rightSide);
             _SettingsUI.ToggleBool = toggleJSON;
 
             // 镜头动作播放进度
-            _progressJSON = self.SetupSliderFloat("Camera Progress", Lang.Get("Camera Progress"), 0f, 0f, 0f, v =>
+            _progressJSON = self.SetupSliderFloat("Camera Progress", 0f, 0f, 0f, v =>
             {
                 // 更新镜头进度
                 //_MmdCamera.SetPlayPos((double)v);
@@ -81,13 +80,13 @@ namespace mmd2timeline
             }, rightSide);
             _SettingsUI.Elements.Add(_progressJSON);
 
-            _timeDelayJSON = Utils.SetupSliderFloatWithRange(self, Lang.Get("Camera Delay"), 0f, 0f, 0f, rightSide);
-            _timeDelayJSON.setCallbackFunction = v =>
+            _timeDelayJSON = self.SetupSliderFloatWithRange("Camera Delay", 0f, 0f, 0f, v =>
             {
                 // 更新镜头延迟
                 _CameraSetting.TimeDelay = v;
                 Refresh();
-            };
+            }, rightSide);
+
             _SettingsUI.Elements.Add(_timeDelayJSON);
 
             // 位置偏移X

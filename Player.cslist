@@ -29,6 +29,7 @@ src\LibMmd\Util\MmdReaderUtil2.cs
 src\LibMmd\Util\Tools.cs
 src\Utils\LogUtil.cs
 src\Utils\MacGruber_Utils.cs
+src\Utils\MacGruber_Utils.Ext.cs
 src\Utils\SJISToUnicode.cs
 src\Utils\ToEncoding.cs
 src\Utils\BufferBinaryReader.cs
@@ -45,6 +46,7 @@ src\Utils\GroupUI.cs
 src\Utils\Config.cs
 src\Utils\Config.Settings.cs
 src\Utils\Config.Globle.cs
+src\Utils\Config.Render.cs
 src\Utils\Lang.cs
 src\Player\Audio\AudioClipHelper.cs
 src\Player\Audio\AudioPlayHelper.cs
@@ -55,13 +57,13 @@ src\Player\Camera\CameraHelper.Focus.cs
 src\Player\Camera\CameraHelper.Follow.cs
 src\Player\Camera\CameraHelper.Progress.cs
 src\Player\Camera\CameraHelper.UI.cs
+src\Player\Camera\CameraHelper.EyeControl.cs
 src\Player\Camera\NavigationRigSnapshot.cs
 src\Player\Folder\MMDFolderHelper.cs
 src\Player\Motion\MotionHelper.AdjustBones.cs
 src\Player\Motion\MotionHelper.CloseLowerBones.cs
 src\Player\Motion\MotionHelper.cs
 src\Player\Motion\MotionHelper.Model.cs
-src\Player\Motion\MotionHelper.EyeControl.cs
 src\Player\Motion\MotionHelper.HeightFix.cs
 src\Player\Motion\MotionHelper.MakeReady.cs
 src\Player\Motion\MotionHelper.Progress.cs
@@ -99,6 +101,7 @@ src\Player\Player.HUD.cs
 src\Player\Player.Trigger.cs
 src\Player\Player.Status.cs
 src\Player\Player.UI.cs
+src\Player\Player.Render.cs
 src\Player\Settings.cs
 src\Player\Settings.MotionMode.cs
 src\Player\Settings.UI.cs

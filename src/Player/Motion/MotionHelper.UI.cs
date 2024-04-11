@@ -1,5 +1,4 @@
-﻿using MacGruber;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -193,7 +192,7 @@ namespace mmd2timeline
             _MotionSettingsUI.ChildGroups.Add(allJointsSettingsGroup);
             _MotionSettingsUI.OuterChildGroups.Add(heelSettingsGroup);
 
-            var title = self.CreateTitleUINoLang($"{_PersonAtom.uid} {Lang.Get("Motion Settings")}", rightSide);
+            var title = self.CreateTitleUINoLang($"{_PersonAtom.uid} {Lang.Get("Motion Settings")}", rightSide: rightSide);
             _MotionSettingsUI.OuterElements.Add(title);
 
             // 生成动作选择器

@@ -33,7 +33,7 @@ namespace mmd2timeline
         {
             get
             {
-                return $"{PLAYLIST_PATH}\\defalut.{PLAYLIST_SAVE_EXT}";
+                return $"{PLAYLIST_PATH}\\default.{PLAYLIST_SAVE_EXT}";
             }
         }
 
@@ -221,9 +221,9 @@ namespace mmd2timeline
         /// <summary>
         /// 加载默认播放列表数据到当前列表对象
         /// </summary>
-        public void LoadDefault()
+        private void LoadDefault()
         {
-            this.Load(FavoriteFileName);
+            this.Load(DefaultFileName);
             this.GetList();
         }
 

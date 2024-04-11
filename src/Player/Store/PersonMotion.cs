@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
 namespace mmd2timeline.Store
 {
@@ -323,25 +322,49 @@ namespace mmd2timeline.Store
         /// 初始化动作数据
         /// </summary>
         /// <param name="data"></param>
-        internal void InitMotion(MMDEntity.FilesData data)
+        internal void InitMotion(MMDEntity.FilesData data, int motionIndex = 0)
         {
             this.Files.Clear();
 
-            // 设定默认动作文件
-            if (data.DefaultMotion != MMDEntity.noneString)
-            {
-                this.Files.Add(data.DefaultMotion);
-            }
+            var defaultMotion = data.MotionPaths.FirstOrDefault(p => p.ToLower().EndsWith($"motion {motionIndex + 1}.vmd"));
 
-            // 设定默认表情
-            if (data.Expressions != null && data.Expressions.Count > 0)
+            if (!string.IsNullOrEmpty(defaultMotion))
             {
-                // 默认最大只能选择3个表情文件
-                var maxExpressions = Math.Min(3, data.Expressions.Count);
+                this.Files.Add(defaultMotion);
 
-                for (var i = 0; i < maxExpressions; i++)
+                var defaultLips = data.MotionPaths.FirstOrDefault(p => p.ToLower().EndsWith($"lip {motionIndex + 1}.vmd"));
+                if (!string.IsNullOrEmpty(defaultLips))
                 {
-                    this.Files?.Add(data.Expressions[i]);
+                    this.Files.Add(defaultLips);
+                }
+
+                var defaultFace = data.MotionPaths.FirstOrDefault(p => p.ToLower().EndsWith($"face {motionIndex + 1}.vmd"));
+                if (!string.IsNullOrEmpty(defaultFace))
+                {
+                    this.Files.Add(defaultFace);
+                }
+            }
+            else
+            {
+                if (motionIndex == 0)
+                {
+                    // 设定默认动作文件
+                    if (data.DefaultMotion != MMDEntity.noneString)
+                    {
+                        this.Files.Add(data.DefaultMotion);
+
+                        // 设定默认表情
+                        if (data.Expressions != null && data.Expressions.Count > 0)
+                        {
+                            // 默认最大只能选择3个表情文件
+                            var maxExpressions = Math.Min(3, data.Expressions.Count);
+
+                            for (var i = 0; i < maxExpressions; i++)
+                            {
+                                this.Files?.Add(data.Expressions[i]);
+                            }
+                        }
+                    }
                 }
             }
         }

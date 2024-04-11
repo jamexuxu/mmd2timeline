@@ -51,9 +51,8 @@ namespace mmd2timeline
             {
                 try
                 {
-                    config.ResetAll();
-
                     SetValuesToDefalut();
+                    config.ResetAll();
                 }
                 catch (Exception ex)
                 {
@@ -316,6 +315,8 @@ namespace mmd2timeline
                 config.SyncMode = ProgressSyncMode.GetValue(m);
             });
 
+            RegisterStringChooser(_syncMode);
+
             #region 播放速度UI配置
             var speedParamName = "Play Speed";
             var _PlaySpeedJSON = new JSONStorableFloat(speedParamName, dft.PlaySpeed, 0f, 2f);
@@ -469,14 +470,17 @@ namespace mmd2timeline
 
             CreateTitleUI("Camera Settings", RightSide);
 
-            SetupToggle(config.CameraEnabled, "Camera Enabled Non-VR", dft.CameraEnabled, (v) => config.CameraEnabled = v, RightSide);
+            var enableCameraJSON = SetupToggle(config.CameraEnabled, "Camera Enabled Non-VR", dft.CameraEnabled, (v) => config.CameraEnabled = v, RightSide);
+            RegisterBool(enableCameraJSON);
 
-            SetupToggle(config.CameraEnabledInVR, "Camera Enabled in VR", dft.CameraEnabledInVR, (v) => config.CameraEnabledInVR = v, RightSide);
+            var enableCameraInVRJSON = SetupToggle(config.CameraEnabledInVR, "Camera Enabled in VR", dft.CameraEnabledInVR, (v) => config.CameraEnabledInVR = v, RightSide);
+            RegisterBool(enableCameraInVRJSON);
 
-            SetupToggle(config.CameraFOVEnabled, "FOV Enabled", dft.CameraFOVEnabled, (v) =>
+            var enableFovJSON = SetupToggle(config.CameraFOVEnabled, "FOV Enabled", dft.CameraFOVEnabled, (v) =>
             {
                 config.CameraFOVEnabled = v;
             }, RightSide);
+            RegisterBool(enableFovJSON);
 
             //SetupToggle(config.AutoGazeToWindowCamera, "Auto Gaze to WindowCamera", dft.AutoGazeToWindowCamera, v => config.AutoGazeToWindowCamera = v, RightSide);
 

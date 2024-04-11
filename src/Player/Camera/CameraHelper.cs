@@ -30,6 +30,17 @@ namespace mmd2timeline
         public event CameraActivateStatusChangeCallback OnCameraActivateStatusChanged;
 
         /// <summary>
+        /// Fov 更改的回调委托
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="fov"></param>
+        public delegate void FovChangedCallback(CameraHelper sender, float fov);
+        /// <summary>
+        /// Fov更改的事件
+        /// </summary>
+        public event FovChangedCallback OnFOVChanged;
+
+        /// <summary>
         /// 配置数据
         /// </summary>
         protected static readonly Config config = Config.GetInstance();
@@ -282,6 +293,8 @@ namespace mmd2timeline
 
             DisposeFollow();
 
+            RestoreEyesControl();
+
             _MmdCamera = null;
             _CameraControl = null;
             _CameraSetting = null;
@@ -296,7 +309,7 @@ namespace mmd2timeline
         /// </summary>
         public void OnDisable()
         {
-
+            RestoreEyesControl();
         }
 
         /// <summary>

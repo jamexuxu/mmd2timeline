@@ -236,6 +236,7 @@
     <Compile Include="src\Player\Audio\AudioPlayHelper.Progress.cs" />
     <Compile Include="src\Player\Audio\AudioPlayHelper.UI.cs" />
     <Compile Include="src\Player\Camera\CameraHelper.cs" />
+    <Compile Include="src\Player\Camera\CameraHelper.EyeControl.cs" />
     <Compile Include="src\Player\Camera\CameraHelper.Focus.cs" />
     <Compile Include="src\Player\Camera\CameraHelper.Follow.cs" />
     <Compile Include="src\Player\Camera\CameraHelper.Progress.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="src\Player\Motion\MotionHelperGroup.cs" />
     <Compile Include="src\Player\Motion\PersonAtomHelper.cs" />
     <Compile Include="src\Player\Player.cs" />
+    <Compile Include="src\Player\Player.ForRender.cs" />
     <Compile Include="src\Player\Player.HUD.cs" />
     <Compile Include="src\Player\Player.PlayConfirm.cs" />
     <Compile Include="src\Player\Player.Playlist.cs" />
@@ -282,9 +284,11 @@
     <Compile Include="src\Player\Trigger\TriggerEventHelper.cs" />
     <Compile Include="src\Player\Trigger\TriggerEventType.cs" />
     <Compile Include="src\Utils\Config.cs" />
+    <Compile Include="src\Utils\Config.Render.cs" />
     <Compile Include="src\Utils\Enums.cs" />
     <Compile Include="src\Utils\Lang.cs" />
     <Compile Include="src\LibMmd\Motion\VmdVisibleIK.cs" />
+    <Compile Include="src\Utils\MacGruber_Utils.Ext.cs" />
     <Compile Include="src\Utils\MSJSONClass.cs" />
     <Compile Include="src\Player\BaseScript.cs" />
     <Compile Include="src\Player\BaseScript.FullElements.cs" />

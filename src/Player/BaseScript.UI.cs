@@ -34,7 +34,17 @@ namespace mmd2timeline
         /// <returns></returns>
         internal UIDynamicTextInfo CreateTitleUI(string text, bool rightSide = false)
         {
-            return CreateTitleUINoLang(Lang.Get(text), rightSide);
+            return CreateTitleUINoLang(Lang.Get(text), rightSide: rightSide);
+        }
+
+        /// <summary>
+        /// 创建提示UI
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        internal UIDynamicTextInfo CreateTipUI(string text, bool rightSide = false)
+        {
+            return CreateTitleUINoLang(Lang.Get(text), fontStyle: FontStyle.Normal, alignment: TextAnchor.MiddleLeft, rightSide: rightSide);
         }
 
         /// <summary>
@@ -43,14 +53,15 @@ namespace mmd2timeline
         /// <param name="text"></param>
         /// <param name="rightSide"></param>
         /// <returns></returns>
-        internal UIDynamicTextInfo CreateTitleUINoLang(string text, bool rightSide = false)
+        internal UIDynamicTextInfo CreateTitleUINoLang(string text, FontStyle fontStyle = UnityEngine.FontStyle.Bold, TextAnchor alignment = UnityEngine.TextAnchor.MiddleCenter, bool rightSide = false)
         {
             var title = Utils.SetupInfoOneLine(this, text, rightSide);
-            title.text.alignment = UnityEngine.TextAnchor.MiddleCenter;
-            title.text.fontStyle = UnityEngine.FontStyle.Bold;
+            title.text.alignment = alignment;
+            title.text.fontStyle = fontStyle;
 
             return title;
         }
+
         /// <summary>
         /// 创建一个空UI控件
         /// </summary>
@@ -261,6 +272,20 @@ namespace mmd2timeline
             JSONStorableFloat storable = SetupSliderFloatWithRange(paramName, label, defaultValue, minValue, maxValue, rightSide, valueFormat);
             storable.setCallbackFunction = v => callback(v);
             return storable;
+        }
+
+        internal JSONStorableFloat SetupSliderFloatWithRange(string paramName, float defaultValue, float minValue, float maxValue, Action<float> callback, bool rightSide, string valueFormat = "")
+        {
+            string label = Lang.Get(paramName);
+
+            return SetupSliderFloatWithRange(paramName, label, defaultValue, minValue, maxValue, callback, rightSide, valueFormat);
+        }
+
+        internal JSONStorableFloat SetupSliderFloatWithRange(string paramName, float defaultValue, float minValue, float maxValue, bool rightSide, string valueFormat = "")
+        {
+            string label = Lang.Get(paramName);
+
+            return SetupSliderFloatWithRange(paramName, label, defaultValue, minValue, maxValue, rightSide, valueFormat);
         }
 
         // Create VaM-UI Float slider

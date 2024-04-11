@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace mmd2timeline
 {
@@ -109,6 +108,15 @@ namespace mmd2timeline
                 if (_CurrentItem != value)
                 {
                     _CurrentItem = value;
+
+                    if (value != null)
+                    {
+                        _currentTitleJSON.val = value.Title;
+                    }
+                    else
+                    {
+                        _currentTitleJSON.val = null;
+                    }
                 }
             }
         }
@@ -191,6 +199,8 @@ namespace mmd2timeline
         {
             if (atom.type == "Person")
             {
+                if (atom.uid.ToLower().EndsWith("banformmd")) return;
+
                 // 正在加载中，不进行处理
                 if (SuperController.singleton.isLoading)
                 {
@@ -267,7 +277,7 @@ namespace mmd2timeline
             _triggerHelper.Trigger(TriggerEventHelper.TRIGGER_PROGRESS_CHANGE, progress, 0f, _ProgressHelper.MaxTime);
 
             // 设置镜头播放进度
-            SetMMDCameraProgress(progress);
+            SetMMDCameraProgress(progress, hardUpdate);
 
             // 设置音频播放进度
             if (config.SyncMode != ProgressSyncMode.SyncWithAudio // 同步进度不依据音频
@@ -412,11 +422,13 @@ namespace mmd2timeline
             _ProgressHelper.OnProgressChanged += SyncProgress;
             _ProgressHelper.OnProgressEnded += OnProgressEnded;
             _ProgressHelper.OnPlayStatusChanged += OnPlayStatusChanged;
+            _ProgressHelper.OnMaxLengthChanged += OnMaxLengthChanged;
 
             // 初始化镜头助手
             _CameraHelper = CameraHelper.GetInstance();
             _CameraHelper.OnCameraMotionLoaded += OnCameraLoaded;
             _CameraHelper.OnCameraActivateStatusChanged += OnCameraActivateStatusChanged;
+            _CameraHelper.OnFOVChanged += OnFOVChanged;
 
             //--音频播放助手--------------------------------------------------------------
             _AudioPlayHelper = AudioPlayHelper.GetInstance();
@@ -677,6 +689,8 @@ namespace mmd2timeline
         {
             base.Init();
 
+            InitForRenderValues();
+
             //InitTriggers();
             InitStatusParams();
         }
@@ -704,14 +718,38 @@ namespace mmd2timeline
         /// <returns></returns>
         IEnumerator StartDeferred()
         {
-            yield return this.Playlist.LoadFromDefalut();
+            //yield return new WaitForSeconds(10f);
+
+            //for (var i = 0; i < 30; i++)
+            //    yield return null;
+
+            //yield return null;
+
+            //StartCoroutine(this.Playlist.LoadFromDefalut());
+
+            //// 设定有原子添加，等待处理
+            //hasAtomAdded = true;
+
+            //yield return new WaitWhile(() => { return SuperController.singleton.isLoading; });
+
             yield return null;
 
-            // 设定有原子添加，等待处理
-            hasAtomAdded = true;
-            isInited = true;
+            if (SuperController.singleton.isLoading)
+            {
+                hasAtomAdded = true;
+            }
+            else
+            {
+                RefreshPersonAtoms();
+            }
+
             yield return null;
+            isInited = true;
+
             //_triggerHelper.Trigger(TriggerEventHelper.TRIGGER_SCRIPT_LOADED);
+            yield return null;
+
+            //yield return this.Playlist.LoadFromDefalut();
         }
 
         #region 处理人物位置同步
@@ -726,9 +764,11 @@ namespace mmd2timeline
 
         public void FixedUpdate()
         {
+            if (SuperController.singleton.isLoading || !isInited) return;
+
             bool shouldResetCamera = (SuperController.singleton.worldUIActivated);
 
-            if (config.MainHUDVisible && _CameraHelper.IsActive)
+            if (config.MainHUDVisible && _CameraHelper.IsActive && !_CameraHelper.IsUsingCustomCameraAtom)
             {
                 _CameraHelper.IsActive = false;
 
@@ -764,13 +804,13 @@ namespace mmd2timeline
         public void Update()
         {
             // 如果场景正在加载中，则不执行后边的代码
-            if (SuperController.singleton.isLoading) return;
-
-            if (IsLocked || !isInited) return;
+            if (SuperController.singleton.isLoading || IsLocked || !isInited) return;
 
             #region 如果有人物原子被添加，则进行让人物刷新的处理（只有新加载场景时才会出现这种情况）
             if (hasAtomAdded)
             {
+                waitFrames++;
+
                 if (waitFrames > MAX_WAIT_FRAMES)
                 {
                     waitFrames = 0;
@@ -779,10 +819,7 @@ namespace mmd2timeline
 
                     hasAtomAdded = false;
                 }
-                else
-                {
-                    waitFrames++;
-                }
+
                 return;
             }
             #endregion
@@ -988,32 +1025,23 @@ namespace mmd2timeline
         /// 设置镜头动作进度
         /// </summary>
         /// <param name="value"></param>
-        private void SetMMDCameraProgress(float value)
+        private void SetMMDCameraProgress(float value, bool hardUpdate)
         {
             try
             {
-                if (config.EnableCamera && config.CameraActive)
+                var cameraActive = false;
+
+                if (config.EnableCamera && (config.CameraActive || _CameraHelper.IsUsingCustomCameraAtom))
                 {
                     if (_CameraHelper.HasMotion)
                     {
-                        _CameraHelper.SetProgress(value);
+                        _CameraHelper.SetProgress(value, hardUpdate);
                         // 启用镜头跟随
-                        AlignHeadToCamera();
-                        return;
+                        cameraActive = true;
                     }
-                    //else
-                    //{
-                    //    if (config.UseWindowCamera)
-                    //    {
-                    //        // 启用镜头跟随
-                    //        AlignHeadToCamera();
-
-                    //        return;
-                    //    }
-                    //}
                 }
 
-                _CameraHelper.IsActive = false;
+                _CameraHelper.IsActive = cameraActive;
             }
             catch (Exception ex)
             {
@@ -1029,14 +1057,14 @@ namespace mmd2timeline
             _ProgressHelper.Stop(6);
             yield return null;
 
-            SetAllPersonOff();
+            yield return _MotionHelperGroup.SetPersonOff();
             yield return null;
 
             _ProgressHelper.SetProgress(0.0f, true);
             //StopAndStartOver();
             yield return new WaitForSeconds(1);
 
-            SetAllPersonOn();
+            yield return _MotionHelperGroup.SetPersonOn();
             yield return null;
 
             _ProgressHelper.Play();
@@ -1255,13 +1283,14 @@ namespace mmd2timeline
             {
                 yield return InitPersonAtomMotionHelper(atom, fileData);
 
-                SetPersonOff(atom);
+                //SetPersonOff(atom);
             }
             //}
             //catch (Exception e)
             //{
             //    LogUtil.LogError(e, $"InitPersonAtomMotionHelper");
             //}
+            yield return _MotionHelperGroup.SetPersonOff();
 
             // 播放前设置一下人物关节参数
             _MotionHelperGroup.SetPersonAllJoints();
@@ -1269,10 +1298,7 @@ namespace mmd2timeline
             _ProgressHelper.Forward(0.001f);
             yield return new WaitForSeconds(1);
 
-            foreach (var atom in PersonAtoms)
-            {
-                SetPersonOn(atom);
-            }
+            yield return _MotionHelperGroup.SetPersonOn();
 
             yield return null;//new WaitForSeconds(1);
 
@@ -1341,7 +1367,8 @@ namespace mmd2timeline
                 {
                     motion = new PersonMotion();
                     CurrentItem.Motions.Add(motion);
-                    motion.InitMotion(fileData);
+                    // 初始化动作，并提交当前动作的序号
+                    motion.InitMotion(fileData, CurrentItem.Motions.Count - 1);
                 }
                 else
                 {
@@ -1453,62 +1480,6 @@ namespace mmd2timeline
         }
 
         /// <summary>
-        /// 打开人物
-        /// </summary>
-        /// <param name="person"></param>
-        private void SetPersonOn(Atom person)
-        {
-            // 碰撞开启
-            person.collisionEnabled = true;
-
-            // 允许初始动作修正时调用
-            if (config.EnableInitialMotionAdjustment)
-            {
-                MotionHelper helper = _MotionHelperGroup.GetMotionHelper(person);
-
-                if (helper == null)
-                {
-                    LogUtil.LogWarning($"The MotionHelper for {person.name} is Not Init.");
-                    return;
-                }
-
-                StartCoroutine(helper.Ready());
-
-                //_MotionHelperGroup.Ready(person);
-            }
-        }
-
-        /// <summary>
-        /// 关闭人物
-        /// </summary>
-        /// <param name="person"></param>
-        private void SetPersonOff(Atom person)
-        {
-            //if (config.ResetPhysicalWhenLoadMotion)
-            //{
-            //    // 重置物理
-            //    person.ResetRigidbodies();
-            //    person.ResetPhysical();
-            //}
-
-            // 关闭碰撞
-            person.collisionEnabled = false;
-            // 允许初始动作修正时调用
-            if (config.EnableInitialMotionAdjustment)
-            {
-                MotionHelper helper = _MotionHelperGroup.GetMotionHelper(person);
-
-                if (helper == null)
-                {
-                    LogUtil.LogWarning($"The MotionHelper for {person.name} is Not Init.");
-                    return;
-                }
-
-                StartCoroutine(helper.MakeReady());
-            }
-        }
-
-        /// <summary>
         /// 重置所有人物动作
         /// </summary>
         /// <returns></returns>
@@ -1517,81 +1488,12 @@ namespace mmd2timeline
             isMotionResetting = true;
             // 跳一帧
             yield return null;
-            foreach (var item in _MotionHelperGroup.Helpers)
-            {
-                //var pre = item.PersonAtom.mainController.transform.position;
 
-                //item.PersonAtom.tempFreezePhysics = true;
-                //ResetPose(item.PersonAtom);
-                //for (int i = 0; i < 30; i++)
-                //    yield return null;
-                //item.PersonAtom.mainController.SetPositionNoForce(pre);
-                //item.PersonAtom.tempFreezePhysics = false;
-                //for (int i = 0; i < 30; i++)
-                //    yield return null;
-                //item.UpdateTransform();
-                //yield return null;
+            yield return _MotionHelperGroup.TidyPersons(true);
 
-                yield return item.ReloadMotions(3, init: true);
-
-                for (int i = 0; i < 30; i++)
-                    yield return null;
-
-                SetPersonOff(item.PersonAtom);
-
-                for (int i = 0; i < 30; i++)
-                    yield return null;
-
-                SetPersonOn(item.PersonAtom);
-            }
             yield return null;
             isMotionResetting = false;
             yield return null;
-        }
-
-        /// <summary>
-        /// 设置所有人物关闭
-        /// </summary>
-        private void SetAllPersonOff()
-        {
-            foreach (var atom in PersonAtoms)
-            {
-                SetPersonOff(atom);
-            }
-        }
-
-        /// <summary>
-        /// 设置所有人物开启
-        /// </summary>
-        private void SetAllPersonOn()
-        {
-            foreach (var atom in PersonAtoms)
-            {
-                SetPersonOn(atom);
-            }
-        }
-
-        #endregion
-
-        #region 镜头播放的代码
-        public void AlignHeadToCamera(bool fixedview = false)
-        {
-            try
-            {
-                // 如果主HUD激活，则停止跟踪（测试时不启用）
-                if (!config.CameraActive)
-                {
-                    _CameraHelper.IsActive = false;
-                }
-                else
-                {
-                    _CameraHelper.IsActive = true;
-                }
-            }
-            catch (Exception e)
-            {
-                LogUtil.Debug(e, "Failed to update: ");
-            }
         }
 
         #endregion
@@ -1646,6 +1548,7 @@ namespace mmd2timeline
 
             RemovePlaylistEvent();
 
+            _ProgressHelper.OnMaxLengthChanged -= OnMaxLengthChanged;
             _ProgressHelper.OnPlayStatusChanged -= OnPlayStatusChanged;
             _ProgressHelper.OnProgressChanged -= SyncProgress;
             _ProgressHelper.OnDestroy();
@@ -1655,6 +1558,7 @@ namespace mmd2timeline
             _AudioPlayHelper.OnDestroy();
             _AudioPlayHelper = null;
 
+            _CameraHelper.OnFOVChanged -= OnFOVChanged;
             _CameraHelper.OnCameraMotionLoaded -= OnCameraLoaded;
             _CameraHelper.OnCameraActivateStatusChanged -= OnCameraActivateStatusChanged;
             _CameraHelper.OnDestroy();

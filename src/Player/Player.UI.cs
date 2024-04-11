@@ -241,6 +241,7 @@ namespace mmd2timeline
                 "\n\n<b>" +
                 $"v{this.Version}" +
                 $"</b>" +
+                (string.IsNullOrEmpty(VERSION_TIPS) ? "" : "\n\n<size=28>" + Lang.Get(VERSION_TIPS) + "</size>") +
                 $"\n" +
                 $"\n<size=32><b>" +
                 Lang.Get("IMPORTANT!!!") +

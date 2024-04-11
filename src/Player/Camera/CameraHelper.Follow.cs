@@ -141,6 +141,17 @@ namespace mmd2timeline
         }
 
         /// <summary>
+        /// 是否正在使用自定义镜头原子
+        /// </summary>
+        public bool IsUsingCustomCameraAtom
+        {
+            get
+            {
+                return config.UseCustomCameraAtom && _customCameraAtom != null;
+            }
+        }
+
+        /// <summary>
         /// 设置WindowCamera的开关状态
         /// </summary>
         /// <param name="on"></param>
@@ -171,6 +182,25 @@ namespace mmd2timeline
             displayControl.on = !on;
         }
 
+        Transform CurrentCameraTransform
+        {
+            get
+            {
+                if (config.UseWindowCamera && WindowCamera != null)
+                {
+                    return _CameraTransform;
+                }
+                else if (IsUsingCustomCameraAtom)
+                {
+                    return _customCameraAtom.mainController.control;
+                }
+                else
+                {
+                    return NavigationRig;
+                }
+            }
+        }
+
         /// <summary>
         /// 更新镜头
         /// </summary>
@@ -182,8 +212,8 @@ namespace mmd2timeline
         {
             try
             {
-                // 如果不启用，直接返回
-                if (!_isActive && !isSetting)
+                // 如果不启用，或在世界UI上，直接返回
+                if ((!_isActive && !isSetting) || SuperController.singleton.worldUIActivated)
                 {
                     Deactivate();
                     return;
@@ -249,7 +279,7 @@ namespace mmd2timeline
                 else
                 {
                     // 如果使用自定义相机原子模式并且自定义相机原子不为空
-                    if (!isSetting && config.UseCustomCameraAtom && _customCameraAtom != null)
+                    if (!isSetting && IsUsingCustomCameraAtom)
                     {
                         //_cameraAtom.mainController.control.SetPositionAndRotation(position, rotation);
                         _customCameraAtom.mainController.control.position = position;
@@ -297,6 +327,8 @@ namespace mmd2timeline
                     }
                     SuperController.singleton.MonitorCenterCamera.orthographic = orthographic;
                 }
+
+                OnFOVChanged?.Invoke(this, fov);
                 isSetting = false;
             }
             catch (Exception e)
@@ -381,7 +413,7 @@ namespace mmd2timeline
         internal void EnableNavigation(bool enable = true)
         {
             // 未启用镜头时，如果要禁用镜头，跳过处理
-            if (!enable && (!config.EnableCamera || !HasMotion))
+            if (!enable && (!config.EnableCamera || !(HasMotion)))
                 return;
 
             if (config.UseWindowCamera)
@@ -412,68 +444,36 @@ namespace mmd2timeline
                 OnCameraActivateStatusChanged?.Invoke(this, SuperController.singleton.navigationDisabled);
 
                 // 如果使用镜头原子，则检查镜头原子是否有Embody插件，如果有，则自动进行镜头启用和禁用的处理
-                if (config.UseCustomCameraAtom)
+                if (IsUsingCustomCameraAtom)
                 {
-                    if (_customCameraAtom != null)
+                    // 如果自定义相机原子为关闭状态，则打开它
+                    var cameraAtomOnJSON = _customCameraAtom.GetBoolJSONParam("on");
+                    if (cameraAtomOnJSON != null && !cameraAtomOnJSON.val)
                     {
-                        // 如果自定义相机原子为关闭状态，则打开它
-                        var cameraAtomOnJSON = _customCameraAtom.GetBoolJSONParam("on");
-                        if (cameraAtomOnJSON != null && !cameraAtomOnJSON.val)
-                        {
-                            cameraAtomOnJSON.val = true;
-                        }
+                        cameraAtomOnJSON.val = true;
+                    }
 
-                        foreach (string receiverChoice in _customCameraAtom.GetStorableIDs())
+                    foreach (string receiverChoice in _customCameraAtom.GetStorableIDs())
+                    {
+                        if (receiverChoice.StartsWith("plugin#") && receiverChoice.IndexOf("Embody") > 7)
                         {
-                            if (receiverChoice.StartsWith("plugin#") && receiverChoice.IndexOf("Embody") > 7)
+                            var receiver = _customCameraAtom.GetStorableByID(receiverChoice);
+
+                            if (receiver != null)
                             {
-                                var receiver = _customCameraAtom.GetStorableByID(receiverChoice);
+                                var activeJSON = receiver.GetBoolJSONParam("Active");
 
-                                if (receiver != null)
+                                if (activeJSON != null)
                                 {
-                                    var activeJSON = receiver.GetBoolJSONParam("Active");
-
-                                    if (activeJSON != null)
-                                    {
-                                        activeJSON.val = SuperController.singleton.navigationDisabled;
-                                    }
+                                    activeJSON.val = SuperController.singleton.navigationDisabled;
                                 }
-
-                                break;
                             }
+
+                            break;
                         }
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 激活
-        /// </summary>
-        private void Activate()
-        {
-            // 如果已经时激活状态，返回
-            if (_isActived) return;
-
-            if (_NavigationRigSnapshot == null)
-            {
-                _NavigationRigSnapshot = NavigationRigSnapshot.Snap();
-            }
-
-            // 禁用导航
-            EnableNavigation(false);
-
-            // 监控设备没有被激活
-            var offsetStartRotation = !SuperController.singleton.MonitorRig.gameObject.activeSelf;
-            // 设定开始旋转的偏移量
-            if (offsetStartRotation)
-                _startRotationOffset = Quaternion.Euler(0, NavigationRig.eulerAngles.y - _possessor.transform.eulerAngles.y, 0f);
-
-            // 应用全局缩放
-            ApplyWorldScale();
-
-            // 设定为激活状态
-            _isActived = true;
         }
 
         /// <summary>
@@ -488,6 +488,39 @@ namespace mmd2timeline
             _previousWorldScale = SuperController.singleton.worldScale;
             // 设定全局缩放尺寸
             SuperController.singleton.worldScale = _worldScale;
+        }
+
+        /// <summary>
+        /// 激活
+        /// </summary>
+        private void Activate()
+        {
+            // 如果已经时激活状态，返回
+            if (_isActived) return;
+            if (!IsUsingCustomCameraAtom)
+            {
+                if (_NavigationRigSnapshot == null)
+                {
+                    _NavigationRigSnapshot = NavigationRigSnapshot.Snap();
+                }
+
+                // 禁用导航
+                EnableNavigation(false);
+
+                // 监控设备没有被激活
+                var offsetStartRotation = !SuperController.singleton.MonitorRig.gameObject.activeSelf;
+                // 设定开始旋转的偏移量
+                if (offsetStartRotation)
+                    _startRotationOffset = Quaternion.Euler(0, NavigationRig.eulerAngles.y - _possessor.transform.eulerAngles.y, 0f);
+
+                // 应用全局缩放
+                ApplyWorldScale();
+            }
+
+            SyncEyesControl();
+
+            // 设定为激活状态
+            _isActived = true;
         }
 
         /// <summary>
@@ -510,6 +543,8 @@ namespace mmd2timeline
             _currentPositionVelocity = Vector3.zero;
             _currentRotationVelocity = Quaternion.identity;
             _startRotationOffset = Quaternion.identity;
+
+            RestoreEyesControl();
 
             _isActived = false;
 

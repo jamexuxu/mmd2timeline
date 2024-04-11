@@ -10,7 +10,7 @@ namespace mmd2timeline
     internal partial class ProgressHelper
     {
         //public int SyncMode = ProgressSyncMode.SyncWithAudio;
-        
+
         /// <summary>
         /// 播放状态改变的回调委托
         /// </summary>
@@ -26,13 +26,23 @@ namespace mmd2timeline
         /// <summary>
         /// 进度更改的回调委托
         /// </summary>
-        /// <param name="length">返回音频长度</param>
+        /// <param name="length">返回长度</param>
         public delegate void ProgressChangedCallback(float length, bool hardUpdate);
 
         /// <summary>
         /// 进度更改的事件
         /// </summary>
         public event ProgressChangedCallback OnProgressChanged;
+
+        /// <summary>
+        /// 最大长度更改的回调函数
+        /// </summary>
+        /// <param name="length"></param>
+        public delegate void MaxLengthChangedCallback(float length);
+        /// <summary>
+        /// 最大长度更改事件
+        /// </summary>
+        public event MaxLengthChangedCallback OnMaxLengthChanged;
 
         /// <summary>
         /// 进度结束的回调委托
@@ -311,6 +321,8 @@ namespace mmd2timeline
 
             // 重置速度
             //_speed = 1f;
+
+            OnMaxLengthChanged?.Invoke(0);
         }
 
         /// <summary>
@@ -323,6 +335,8 @@ namespace mmd2timeline
             _maxLengthJSON.valNoCallback = length;
             _maxLengthJSON.SetDefaultFromCurrent();
             _progressJSON.max = length;
+
+            OnMaxLengthChanged?.Invoke(length);
         }
 
         /// <summary>

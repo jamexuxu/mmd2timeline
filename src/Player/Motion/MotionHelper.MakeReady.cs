@@ -109,5 +109,36 @@ namespace mmd2timeline
                 this._PositionY.val = (readyPositionY + originalHeight);
             }
         }
+
+        /// <summary>
+        /// 打开人物
+        /// </summary>
+        /// <param name="person"></param>
+        internal IEnumerator SetPersonOn(bool init = false)
+        {
+            // 碰撞开启
+            _PersonAtom.collisionEnabled = true;
+            if (config.EnableInitialMotionAdjustment || init)
+            {
+                yield return Ready();
+            }
+            yield return null;
+        }
+
+        /// <summary>
+        /// 关闭人物
+        /// </summary>
+        /// <param name="person"></param>
+        internal IEnumerator SetPersonOff(bool init = false)
+        {
+            // 关闭碰撞
+            _PersonAtom.collisionEnabled = false;
+            if (config.EnableInitialMotionAdjustment || init)
+            {
+                yield return MakeReady();
+            }
+
+            yield return null;
+        }
     }
 }

@@ -63,27 +63,6 @@ namespace mmd2timeline
             }
         }
 
-        ///// <summary>
-        ///// 镜头是否只使用关键帧
-        ///// </summary>
-        //public bool CameraOnlyKeyFrame
-        //{
-        //    get
-        //    {
-        //        if (this.HasKey("CameraOnlyKeyFrame"))
-        //            return this["CameraOnlyKeyFrame"].AsBool;
-        //        else return false;
-        //    }
-        //    set
-        //    {
-        //        if (this.CameraOnlyKeyFrame != value)
-        //        {
-        //            this["CameraOnlyKeyFrame"].AsBool = value;
-        //            this.Save();
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// 获取是否启用镜头
         /// </summary>

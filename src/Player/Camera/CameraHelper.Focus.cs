@@ -1,5 +1,4 @@
-﻿using MacGruber;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -181,29 +180,34 @@ namespace mmd2timeline
 
                 var target = _FocusAtom.freeControllers.FirstOrDefault(c => c.name == tagetId);//.GetStorableByID(FocusReceiverJSON.val).transform.position;
 
-                //// 如果是VR模式，则主动计算镜头方向（因为FocusOnController方法在VR模式有向右偏移35度）
-                //if (config.IsInVR)
-                //{
-                var focusRotation = GetFocusOnRotation(position, up, target);
-                var rotation = GetRotation(position, focusRotation, NavigationRig);
-                //    NavigationRig.rotation = rotation;
-                //}
-                //else
-                //{
-                //    if (config.UseWindowCamera)
-                //    {
-                //        _CameraTransform.LookAt(target.transform);
-                //    }
-                //    else
-                //    {
-                //        SuperController.singleton.FocusOnController(target);
-                //    }
-                //}
-
-                return rotation;
+                return GetFocusRatation(position, up, target.transform);
             }
 
             return Quaternion.identity;
+        }
+
+        Quaternion GetFocusRatation(Vector3 position, Vector3 up, Transform target)
+        {
+            //// 如果是VR模式，则主动计算镜头方向（因为FocusOnController方法在VR模式有向右偏移35度）
+            //if (config.IsInVR)
+            //{
+            var focusRotation = GetFocusOnRotation(position, up, target);
+            var rotation = GetRotation(position, focusRotation, NavigationRig);
+            //    NavigationRig.rotation = rotation;
+            //}
+            //else
+            //{
+            //    if (config.UseWindowCamera)
+            //    {
+            //        _CameraTransform.LookAt(target.transform);
+            //    }
+            //    else
+            //    {
+            //        SuperController.singleton.FocusOnController(target);
+            //    }
+            //}
+
+            return rotation;
         }
 
         Vector3 targetPastPosition = Vector3.zero;
@@ -211,11 +215,11 @@ namespace mmd2timeline
         /// 获取聚焦角度
         /// </summary>
         /// <returns></returns>
-        Quaternion GetFocusOnRotation(Vector3 position, Vector3 up, FreeControllerV3 target)
+        Quaternion GetFocusOnRotation(Vector3 position, Vector3 up, Transform target)
         {
-            if (_FocusAtom != null)
+            if (target != null)
             {
-                var targetAtomPosition = target.transform.position;
+                var targetAtomPosition = target.position;
 
                 var currentAtomPosition = position;
                 Vector3 targetPosition = Vector3.zero;

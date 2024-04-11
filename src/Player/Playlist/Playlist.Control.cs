@@ -494,22 +494,22 @@ namespace mmd2timeline
             favList.Save();
         }
 
-        /// <summary>
-        /// 获取默认的播放列表
-        /// </summary>
-        /// <returns></returns>
-        internal static Playlist GetDefault()
-        {
-            var list = new Playlist
-            {
-                Name = "Defalut",
-                Description = "This playlist saves the list of your default MMDs."
-            };
+        ///// <summary>
+        ///// 获取默认的播放列表
+        ///// </summary>
+        ///// <returns></returns>
+        //internal static Playlist GetDefault()
+        //{
+        //    var list = new Playlist
+        //    {
+        //        Name = "Defalut",
+        //        Description = "This playlist saves the list of your default MMDs."
+        //    };
 
-            list.LoadDefault();
+        //    list.LoadDefault();
 
-            return list;
-        }
+        //    return list;
+        //}
 
         /// <summary>
         /// 保存当前配置到默认播放列表

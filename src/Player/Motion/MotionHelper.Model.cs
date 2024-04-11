@@ -1,11 +1,4 @@
-﻿using LibMMD.Motion;
-using LibMMD.Unity3D;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using System.Collections;
 
 namespace mmd2timeline
 {

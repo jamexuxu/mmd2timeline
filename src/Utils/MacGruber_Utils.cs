@@ -1,5 +1,5 @@
 ﻿/* /////////////////////////////////////////////////////////////////////////////////////////////////
-Utils 2021-03-13 by MacGruber
+Utils 2021-05-15 by MacGruber
 Collection of various utility functions.
 https://www.patreon.com/MacGruber_Laboratory
 
@@ -7,20 +7,21 @@ Licensed under CC BY-SA after EarlyAccess ended. (see https://creativecommons.or
 
 ///////////////////////////////////////////////////////////////////////////////////////////////// */
 
-using AssetBundles;
-using SimpleJSON;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.XR;
+using UnityEngine.Events;
 using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 using Request = MeshVR.AssetLoader.AssetBundleFromFileRequest;
+using AssetBundles;
+using SimpleJSON;
 
 namespace MacGruber
 {
-    public static class Utils
+    public static partial class Utils
     {
         // VaM Plugins can contain multiple Scripts, if you load them via a *.cslist file. This function allows you to get
         // an instance of another script within the same plugin, allowing you directly interact with it by reading/writing
@@ -86,87 +87,25 @@ namespace MacGruber
             return storable;
         }
 
-        /// <summary>
-        /// 创建带回调函数的Toggle
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="label"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="callback"></param>
-        /// <param name="rightSide"></param>
-        /// <returns></returns>
-        public static JSONStorableBool SetupToggle(MVRScript script, string label, bool defaultValue, Action<bool> callback, bool rightSide)
-        {
-            JSONStorableBool storable = SetupToggle(script, label, defaultValue, rightSide);
-            storable.setCallbackFunction = v => callback(v);
-            return storable;
-        }
-
         // Create VaM-UI Float slider
-        public static JSONStorableFloat SetupSliderFloat(MVRScript script, string label, float defaultValue, float minValue, float maxValue, bool rightSide, string valueFormat = "")
+        public static JSONStorableFloat SetupSliderFloat(MVRScript script, string label, float defaultValue, float minValue, float maxValue, bool rightSide)
         {
             JSONStorableFloat storable = new JSONStorableFloat(label, defaultValue, minValue, maxValue, true, true);
             storable.storeType = JSONStorableParam.StoreType.Full;
-            var slider = script.CreateSlider(storable, rightSide);
-            if (!string.IsNullOrEmpty(valueFormat))
-            {
-                slider.valueFormat = valueFormat;
-            }
-            //script.RegisterFloat(storable);
-            return storable;
-        }
-
-        /// <summary>
-        /// 创建带回调函数的Slider
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="label"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="minValue"></param>
-        /// <param name="maxValue"></param>
-        /// <param name="callback"></param>
-        /// <param name="rightSide"></param>
-        /// <param name="valueFormat"></param>
-        /// <returns></returns>
-        public static JSONStorableFloat SetupSliderFloat(MVRScript script, string label, float defaultValue, float minValue, float maxValue, Action<float> callback, bool rightSide, string valueFormat = "")
-        {
-            JSONStorableFloat storable = SetupSliderFloat(script, label, defaultValue, minValue, maxValue, rightSide, valueFormat);
-            storable.setCallbackFunction = v => callback(v);
-            return storable;
-        }
-
-        /// <summary>
-        /// 创建带回调函数的范围可变Slider
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="label"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="minValue"></param>
-        /// <param name="maxValue"></param>
-        /// <param name="callback"></param>
-        /// <param name="rightSide"></param>
-        /// <param name="valueFormat"></param>
-        /// <returns></returns>
-        public static JSONStorableFloat SetupSliderFloatWithRange(MVRScript script, string label, float defaultValue, float minValue, float maxValue, Action<float> callback, bool rightSide, string valueFormat = "")
-        {
-            JSONStorableFloat storable = SetupSliderFloatWithRange(script, label, defaultValue, minValue, maxValue, rightSide, valueFormat);
-            storable.setCallbackFunction = v => callback(v);
+            script.CreateSlider(storable, rightSide);
+            script.RegisterFloat(storable);
             return storable;
         }
 
         // Create VaM-UI Float slider
-        public static JSONStorableFloat SetupSliderFloatWithRange(MVRScript script, string label, float defaultValue, float minValue, float maxValue, bool rightSide, string valueFormat = "")
+        public static JSONStorableFloat SetupSliderFloatWithRange(MVRScript script, string label, float defaultValue, float minValue, float maxValue, bool rightSide)
         {
             JSONStorableFloat storable = new JSONStorableFloat(label, defaultValue, minValue, maxValue, true, true);
             storable.storeType = JSONStorableParam.StoreType.Full;
             storable.constrained = false;
             UIDynamicSlider slider = script.CreateSlider(storable, rightSide);
             slider.rangeAdjustEnabled = true;
-            if (!string.IsNullOrEmpty(valueFormat))
-            {
-                slider.valueFormat = valueFormat;
-            }
-            //script.RegisterFloat(storable);
+            script.RegisterFloat(storable);
             return storable;
         }
 
@@ -178,7 +117,7 @@ namespace MacGruber
             UIDynamicSlider slider = script.CreateSlider(storable, rightSide);
             slider.slider.wholeNumbers = true;
             slider.valueFormat = "F0";
-            //script.RegisterFloat(storable);
+            script.RegisterFloat(storable);
             return storable;
         }
 
@@ -189,7 +128,7 @@ namespace MacGruber
             JSONStorableColor storable = new JSONStorableColor(label, hsvColor);
             storable.storeType = JSONStorableParam.StoreType.Full;
             script.CreateColorPicker(storable, rightSide);
-            //script.RegisterColor(storable);
+            script.RegisterColor(storable);
             return storable;
         }
 
@@ -199,7 +138,7 @@ namespace MacGruber
             string defaultEntry = entries.Count > 0 ? entries[0] : "";
             JSONStorableStringChooser storable = new JSONStorableStringChooser(label, entries, defaultEntry, label);
             self.CreateScrollablePopup(storable, rightSide);
-            //self.RegisterStringChooser(storable);
+            self.RegisterStringChooser(storable);
             return storable;
         }
 
@@ -209,7 +148,7 @@ namespace MacGruber
             string defaultEntry = (defaultIndex >= 0 && defaultIndex < entries.Count) ? entries[defaultIndex] : "";
             JSONStorableStringChooser storable = new JSONStorableStringChooser(label, entries, defaultEntry, label);
             self.CreateScrollablePopup(storable, rightSide);
-            //self.RegisterStringChooser(storable);
+            self.RegisterStringChooser(storable);
             return storable;
         }
 
@@ -225,7 +164,7 @@ namespace MacGruber
                 callback(v);
             };
             self.CreateScrollablePopup(storable, rightSide);
-            //self.RegisterStringChooser(storable);
+            self.RegisterStringChooser(storable);
             return storable;
         }
 
@@ -244,7 +183,7 @@ namespace MacGruber
             textfield.height = 35;
             if (!string.IsNullOrEmpty(defaultValue))
                 storable.SetFilePath(defaultValue);
-            //storable.RegisterFileBrowseButton(button.button);
+            storable.RegisterFileBrowseButton(button.button);
             return storable;
         }
 
@@ -263,7 +202,7 @@ namespace MacGruber
             textfield.height = 35;
             if (!string.IsNullOrEmpty(defaultValue))
                 storable.SetFilePath(defaultValue);
-            //storable.RegisterFileBrowseButton(button.button);
+            storable.RegisterFileBrowseButton(button.button);
             return storable;
         }
 
@@ -310,7 +249,7 @@ namespace MacGruber
         //       Utils.OnDestroyUI();
 
         // Create one-line text input with label
-        public static UIDynamicLabelInput SetupTextInput(MVRScript script, string label, JSONStorableString storable, bool? rightSide)
+        public static UIDynamicLabelInput SetupTextInput(MVRScript script, string label, JSONStorableString storable, bool rightSide)
         {
             if (ourLabelWithInputPrefab == null)
             {
@@ -323,9 +262,9 @@ namespace MacGruber
                 rt.offsetMin = new Vector2(10, -600);
                 LayoutElement le = ourLabelWithInputPrefab.AddComponent<LayoutElement>();
                 le.flexibleWidth = 1;
-                le.minHeight = 40;
+                le.minHeight = 45;
                 le.minWidth = 350;
-                le.preferredHeight = 40;
+                le.preferredHeight = 45;
                 le.preferredWidth = 500;
 
                 RectTransform backgroundTransform = script.manager.configurableScrollablePopupPrefab.transform.Find("Background") as RectTransform;
@@ -386,7 +325,7 @@ namespace MacGruber
         }
 
         // Create label that as an X button on the right side.
-        public static UIDynamicLabelXButton SetupLabelXButton(MVRScript script, string label, UnityAction callback, bool? rightSide)
+        public static UIDynamicLabelXButton SetupLabelXButton(MVRScript script, string label, UnityAction callback, bool rightSide)
         {
             if (ourLabelWithXButtonPrefab == null)
             {
@@ -450,7 +389,82 @@ namespace MacGruber
             }
         }
 
-        public static UIDynamicTextInfo SetupInfoTextNoScroll(MVRScript script, string text, float height, bool? rightSide)
+        // Create input that as an X button on the right side.
+        public static UIDynamicInputXButton SetupInputXButton(MVRScript script, JSONStorableString storable, UnityAction callback, bool rightSide)
+        {
+            if (ourInputWithXButtonPrefab == null)
+            {
+                ourInputWithXButtonPrefab = new GameObject("InputXButton");
+                ourInputWithXButtonPrefab.SetActive(false);
+                RectTransform rt = ourInputWithXButtonPrefab.AddComponent<RectTransform>();
+                rt.anchorMax = new Vector2(0, 1);
+                rt.anchorMin = new Vector2(0, 1);
+                rt.offsetMax = new Vector2(535, -500);
+                rt.offsetMin = new Vector2(10, -600);
+                LayoutElement le = ourInputWithXButtonPrefab.AddComponent<LayoutElement>();
+                le.flexibleWidth = 1;
+                le.minHeight = 50;
+                le.minWidth = 350;
+                le.preferredHeight = 50;
+                le.preferredWidth = 500;
+
+                RectTransform backgroundTransform = script.manager.configurableScrollablePopupPrefab.transform.Find("Background") as RectTransform;
+                backgroundTransform = UnityEngine.Object.Instantiate(backgroundTransform, ourInputWithXButtonPrefab.transform);
+                backgroundTransform.name = "Background";
+                backgroundTransform.anchorMax = new Vector2(1, 1);
+                backgroundTransform.anchorMin = new Vector2(0, 0);
+                backgroundTransform.offsetMax = new Vector2(0, 0);
+                backgroundTransform.offsetMin = new Vector2(0, -10);
+
+                RectTransform buttonTransform = script.manager.configurableScrollablePopupPrefab.transform.Find("Button") as RectTransform;
+                buttonTransform = UnityEngine.Object.Instantiate(buttonTransform, ourInputWithXButtonPrefab.transform);
+                buttonTransform.name = "Button";
+                buttonTransform.anchorMax = new Vector2(1, 1);
+                buttonTransform.anchorMin = new Vector2(1, 0);
+                buttonTransform.offsetMax = new Vector2(0, 0);
+                buttonTransform.offsetMin = new Vector2(-60, -10);
+                Button buttonButton = buttonTransform.GetComponent<Button>();
+                Text buttonText = buttonTransform.Find("Text").GetComponent<Text>();
+                buttonText.text = "X";
+
+                RectTransform inputTransform = script.manager.configurableTextFieldPrefab.transform as RectTransform;
+                inputTransform = UnityEngine.Object.Instantiate(inputTransform, ourInputWithXButtonPrefab.transform);
+                inputTransform.anchorMax = new Vector2(1, 1);
+                inputTransform.anchorMin = new Vector2(0, 0);
+                inputTransform.offsetMax = new Vector2(-65, -5);
+                inputTransform.offsetMin = new Vector2(5, -5);
+                UIDynamicTextField textfield = inputTransform.GetComponent<UIDynamicTextField>();
+                textfield.backgroundColor = Color.white;
+                LayoutElement layout = textfield.GetComponent<LayoutElement>();
+                layout.preferredHeight = layout.minHeight = 35;
+                InputField inputfield = textfield.gameObject.AddComponent<InputField>();
+                inputfield.textComponent = textfield.UItext;
+
+                RectTransform textTransform = textfield.UItext.rectTransform;
+                textTransform.anchorMax = new Vector2(1, 1);
+                textTransform.anchorMin = new Vector2(0, 0);
+                textTransform.offsetMax = new Vector2(-5, -5);
+                textTransform.offsetMin = new Vector2(10, -5);
+
+                UnityEngine.Object.Destroy(textfield);
+
+                UIDynamicInputXButton uid = ourInputWithXButtonPrefab.AddComponent<UIDynamicInputXButton>();
+                uid.input = inputfield;
+                uid.button = buttonButton;
+            }
+
+            {
+                var createUIElement = GetCreateUIElement(script);
+                Transform t = createUIElement(ourInputWithXButtonPrefab.transform, rightSide);
+                UIDynamicInputXButton uid = t.gameObject.GetComponent<UIDynamicInputXButton>();
+                storable.inputField = uid.input;
+                uid.button.onClick.AddListener(callback);
+                t.gameObject.SetActive(true);
+                return uid;
+            }
+        }
+
+        public static UIDynamicTextInfo SetupInfoTextNoScroll(MVRScript script, string text, float height, bool rightSide)
         {
             if (ourTextInfoPrefab == null)
             {
@@ -498,16 +512,14 @@ namespace MacGruber
                 Transform t = createUIElement(ourTextInfoPrefab.transform, rightSide);
                 UIDynamicTextInfo uid = t.gameObject.GetComponent<UIDynamicTextInfo>();
                 uid.text.text = text;
-
-                uid.height = height;
-                //uid.layout.minHeight = height;
-                //uid.layout.preferredHeight = height;
+                uid.layout.minHeight = height;
+                uid.layout.preferredHeight = height;
                 t.gameObject.SetActive(true);
                 return uid;
             }
         }
 
-        public static UIDynamicTextInfo SetupInfoTextNoScroll(MVRScript script, JSONStorableString storable, float height, bool? rightSide)
+        public static UIDynamicTextInfo SetupInfoTextNoScroll(MVRScript script, JSONStorableString storable, float height, bool rightSide)
         {
             UIDynamicTextInfo uid = SetupInfoTextNoScroll(script, storable.val, height, rightSide);
             storable.setCallbackFunction = (string text) =>
@@ -518,21 +530,21 @@ namespace MacGruber
             return uid;
         }
 
-        public static UIDynamicTextInfo SetupInfoOneLine(MVRScript script, string text, bool? rightSide)
+        public static UIDynamicTextInfo SetupInfoOneLine(MVRScript script, string text, bool rightSide)
         {
             UIDynamicTextInfo uid = SetupInfoTextNoScroll(script, text, 35, rightSide);
             uid.background.offsetMin = new Vector2(0, 0);
             return uid;
         }
 
-        public static UIDynamicTextInfo SetupInfoOneLine(MVRScript script, JSONStorableString storable, bool? rightSide)
+        public static UIDynamicTextInfo SetupInfoOneLine(MVRScript script, JSONStorableString storable, bool rightSide)
         {
             UIDynamicTextInfo uid = SetupInfoTextNoScroll(script, storable, 35, rightSide);
             uid.background.offsetMin = new Vector2(0, 0);
             return uid;
         }
 
-        public static UIDynamicTwinButton SetupTwinButton(MVRScript script, string leftLabel, UnityAction leftCallback, string rightLabel, UnityAction rightCallback, bool? rightSide)
+        public static UIDynamicTwinButton SetupTwinButton(MVRScript script, string leftLabel, UnityAction leftCallback, string rightLabel, UnityAction rightCallback, bool rightSide)
         {
             if (ourTwinButtonPrefab == null)
             {
@@ -590,115 +602,6 @@ namespace MacGruber
             }
         }
 
-        public static UIDynamicTwinToggle SetupTwinToggle(MVRScript script, string leftLabel, UnityAction leftCallback, string rightLabel, UnityAction rightCallback, bool? rightSide)
-        {
-            if (ourTwinTogglePrefab == null)
-            {
-                ourTwinTogglePrefab = new GameObject("TwinToggle");
-                ourTwinTogglePrefab.SetActive(false);
-                RectTransform rt = ourTwinTogglePrefab.AddComponent<RectTransform>();
-                rt.anchorMax = new Vector2(0, 1);
-                rt.anchorMin = new Vector2(0, 1);
-                rt.offsetMax = new Vector2(535, -500);
-                rt.offsetMin = new Vector2(10, -600);
-                LayoutElement le = ourTwinTogglePrefab.AddComponent<LayoutElement>();
-                le.flexibleWidth = 1;
-                le.minHeight = 50;
-                le.minWidth = 350;
-                le.preferredHeight = 50;
-                le.preferredWidth = 500;
-
-                Transform togglePrefab = script.manager.configurableTogglePrefab.transform;
-                // foreach(Transform child in togglePrefab) child.name.Print();
-                RectTransform labelTransform = togglePrefab.Find("Label") as RectTransform;
-                // foreach(Transform child in labelTransform) child.name.Print();
-                // labelTransform.NullCheck();
-                labelTransform = UnityEngine.Object.Instantiate(labelTransform, ourTwinTogglePrefab.transform);
-                labelTransform.name = "LabelLeft1";
-                labelTransform.anchorMax = new Vector2(0.5f, 1.0f);
-                labelTransform.anchorMin = new Vector2(0.0f, 0.0f);
-                labelTransform.offsetMax = new Vector2(-3, 0);
-                labelTransform.offsetMin = new Vector2(0, 0);
-                // foreach(var comp in labelTransform.GetComponents(typeof(Component))) comp.GetType().Print();
-                // labelTransform.NullCheck();
-                // Toggle toggleLeft = labelTransform.GetComponent<Toggle>();labelTransform.NullCheck();
-                Text labelLeft = labelTransform.GetComponent<Text>();
-
-                RectTransform panelTransform = togglePrefab.Find("Panel") as RectTransform;
-                // foreach(Transform child in labelTransform) child.name.Print();
-                // labelTransform.NullCheck();
-                panelTransform = UnityEngine.Object.Instantiate(panelTransform, ourTwinTogglePrefab.transform);
-                panelTransform.name = "PanelLeft";
-                panelTransform.anchorMax = new Vector2(.1f, 1f);
-                // panelTransform.anchorMin = new Vector2(0.0f, 0.0f);
-                // panelTransform.offsetMax = new Vector2(-3, 0);
-                // panelTransform.offsetMin = new Vector2(0, 0);
-                // foreach(var comp in labelTransform.GetComponents(typeof(Component))) comp.GetType().Print();
-                // labelTransform.NullCheck();
-                // Toggle toggleLeft = labelTransform.GetComponent<Toggle>();labelTransform.NullCheck();
-                // Text panelLeft = panelTransform.GetComponent<Text>();
-
-                RectTransform backGroundTransform = togglePrefab.Find("Panel") as RectTransform;
-                // foreach(Transform child in labelTransform) child.name.Print();
-                // labelTransform.NullCheck();
-                backGroundTransform = UnityEngine.Object.Instantiate(backGroundTransform, ourTwinTogglePrefab.transform);
-                backGroundTransform.name = "BackGroundLeft";
-                backGroundTransform.anchorMax = new Vector2(.5f, 1f);
-                // panelTransform.anchorMin = new Vector2(0.0f, 0.0f);
-                // panelTransform.offsetMax = new Vector2(-3, 0);
-                // panelTransform.offsetMin = new Vector2(0, 0);
-                foreach (var comp in backGroundTransform.GetComponents(typeof(Component))) comp.GetType();
-                // labelTransform.NullCheck();
-                // Toggle toggleLeft = labelTransform.GetComponent<Toggle>();labelTransform.NullCheck();
-                // Text panelLeft = panelTransform.GetComponent<Text>();
-
-
-
-
-                labelTransform = UnityEngine.Object.Instantiate(labelTransform, ourTwinTogglePrefab.transform);
-                labelTransform.name = "LabelRight1";
-                labelTransform.anchorMax = new Vector2(1.0f, 1.0f);
-                labelTransform.anchorMin = new Vector2(0.5f, 0.0f);
-                labelTransform.offsetMax = new Vector2(0, 0);
-                labelTransform.offsetMin = new Vector2(3, 0);
-                // foreach(var comp in labelTransform.GetComponents(typeof(Component))) comp.GetType().Print();
-                // labelTransform.NullCheck();
-                // Toggle toggleLeft = labelTransform.GetComponent<Toggle>();labelTransform.NullCheck();
-
-                Text labelRight = labelTransform.GetComponent<Text>();
-
-
-                // labelTransform = UnityEngine.Object.Instantiate(labelTransform, ourTwinTogglePrefab.transform);
-                // labelTransform.name = "ButtonRight";
-                // labelTransform.anchorMax = new Vector2(1.0f, 1.0f);
-                // labelTransform.anchorMin = new Vector2(0.5f, 0.0f);
-                // labelTransform.offsetMax = new Vector2(0, 0);
-                // labelTransform.offsetMin = new Vector2(3, 0);
-                // Toggle toggleRight = labelTransform.GetComponent<Toggle>();
-                // Text labelRight = labelTransform.Find("Text").GetComponent<Text>();
-
-                UIDynamicTwinToggle uid = ourTwinTogglePrefab.AddComponent<UIDynamicTwinToggle>();
-                uid.labelLeft = labelLeft;
-                uid.labelLeft = labelLeft;
-                uid.labelRight = labelRight;
-                // uid.toggleLeft = toggleLeft;
-                // uid.toggleRight = toggleRight;
-            }
-
-            {
-                var createUIElement = GetCreateUIElement(script);
-
-                Transform t = createUIElement(ourTwinTogglePrefab.transform, rightSide);
-                UIDynamicTwinToggle uid = t.GetComponent<UIDynamicTwinToggle>();
-                uid.labelLeft.text = leftLabel;
-                uid.labelRight.text = rightLabel;
-                // uid.toggleLeft.onClick.AddListener(leftCallback);
-                // uid.toggleRight.onClick.AddListener(rightCallback);
-                t.gameObject.SetActive(true);
-                return uid;
-            }
-        }
-
         // Call to remove a list of UI elements before rebuilding your UI.
         public static void RemoveUIElements(MVRScript script, List<object> menuElements)
         {
@@ -707,7 +610,6 @@ namespace MacGruber
                 if (menuElements[i] is JSONStorableParam)
                 {
                     JSONStorableParam jsp = menuElements[i] as JSONStorableParam;
-
                     if (jsp is JSONStorableFloat)
                         script.RemoveSlider(jsp as JSONStorableFloat);
                     else if (jsp is JSONStorableBool)
@@ -758,29 +660,14 @@ namespace MacGruber
             menuElements.Clear();
         }
 
-        public delegate Transform CreateUIElement(Transform prefab, bool? rightSide);
-        public static void OnInitUI(MVRScript script, CreateUIElement createUIElementCallback)
-        {
-            if (script != null)
-            {
-                ourCreateUIElements[script] = createUIElementCallback;
-            }
-            else
-            {
-                ourCreateUIElement = createUIElementCallback;
-            }
-        }
+        //public delegate Transform CreateUIElement(Transform prefab, bool rightSide);
+        //public static void OnInitUI(CreateUIElement createUIElementCallback)
+        //{
+        //    ourCreateUIElement = createUIElementCallback;
+        //}
 
-        public static void OnDestroyUI(MVRScript script)
+        public static void OnDestroyUI()
         {
-            if (script != null)
-            {
-                if (ourCreateUIElements.ContainsKey(script))
-                {
-                    ourCreateUIElements.Remove(script);
-                }
-            }
-
             SafeDestroy(ref ourLabelWithInputPrefab);
             SafeDestroy(ref ourLabelWithXButtonPrefab);
             SafeDestroy(ref ourTextInfoPrefab);
@@ -796,31 +683,12 @@ namespace MacGruber
             }
         }
 
-        private static CreateUIElement GetCreateUIElement(MVRScript script)
-        {
-            if (script != null)
-            {
-                if (ourCreateUIElements.ContainsKey(script))
-                {
-                    return ourCreateUIElements[script];
-                }
-            }
-
-            if (ourCreateUIElement != null)
-            {
-                return ourCreateUIElement;
-            }
-
-            throw new Exception("Using the custom UI elements, call from your MVRScript: Utils.OnInitUI(this,CreateUIElement);");
-        }
-
         private static CreateUIElement ourCreateUIElement;
-        private static Dictionary<MVRScript, CreateUIElement> ourCreateUIElements = new Dictionary<MVRScript, CreateUIElement>();
         private static GameObject ourLabelWithInputPrefab;
         private static GameObject ourLabelWithXButtonPrefab;
+        private static GameObject ourInputWithXButtonPrefab;
         private static GameObject ourTextInfoPrefab;
         private static GameObject ourTwinButtonPrefab;
-        private static GameObject ourTwinTogglePrefab;
 
         // ===========================================================================================
 
@@ -1138,7 +1006,7 @@ namespace MacGruber
             base.RestoreFromJSON(jc, Owner.subScenePrefix, false);
         }
 
-        public void OpenPanel(MVRScript container = null)
+        public void OpenPanel()
         {
             if (!SimpleTriggerHandler.Loaded)
             {
@@ -1146,7 +1014,7 @@ namespace MacGruber
                 return;
             }
 
-            triggerActionsParent = container != null ? container.UITransform : Owner.UITransform;
+            triggerActionsParent = Owner.UITransform;
             InitTriggerUI();
             OpenTriggerActionsPanel();
             if (myNeedInit)
@@ -1246,12 +1114,6 @@ namespace MacGruber
                 transitionInterpValueSlider.value = _transitionInterpValue;
             for (int i = 0; i < transitionActions.Count; ++i)
                 transitionActions[i].TriggerInterp(_transitionInterpValue, true);
-            // for (int i=0; i<discreteActionsEnd.Count; ++i)
-            // 	discreteActionsEnd[i].Trigger();
-        }
-
-        public void Trigger()
-        {
             for (int i = 0; i < discreteActionsEnd.Count; ++i)
                 discreteActionsEnd[i].Trigger();
         }
@@ -1285,6 +1147,12 @@ namespace MacGruber
         public Button button;
     }
 
+    public class UIDynamicInputXButton : UIDynamicUtils
+    {
+        public InputField input;
+        public Button button;
+    }
+
     public class UIDynamicTwinButton : UIDynamicUtils
     {
         public Text labelLeft;
@@ -1293,36 +1161,12 @@ namespace MacGruber
         public Button buttonRight;
     }
 
-    public class UIDynamicTwinToggle : UIDynamicUtils
-    {
-        public Text labelLeft;
-        public Text labelRight;
-        public Toggle toggleLeft;
-        public Toggle toggleRight;
-    }
-
     public class UIDynamicTextInfo : UIDynamicUtils
     {
         public Text text;
         public LayoutElement layout;
         public RectTransform background;
-
-        float _height = 0f;
-        public new float height
-        {
-            get
-            {
-                return _height;
-            }
-            set
-            {
-                if (_height != value)
-                {
-                    _height = value;
-                    this.layout.minHeight = value;
-                    this.layout.preferredHeight = value;
-                }
-            }
-        }
     }
+
+
 }

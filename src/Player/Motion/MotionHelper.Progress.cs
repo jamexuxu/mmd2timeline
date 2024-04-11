@@ -1,9 +1,4 @@
-﻿using mmd2timeline.Store;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using System;
 
 namespace mmd2timeline
 {

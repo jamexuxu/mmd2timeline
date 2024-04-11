@@ -120,7 +120,7 @@ namespace mmd2timeline
         /// 设置进度
         /// </summary>
         /// <param name="value"></param>
-        internal void SetProgress(float value)
+        internal void SetProgress(float value, bool hardUpdate = false)
         {
             var progress = this.GetDelayedProgress(value);
 

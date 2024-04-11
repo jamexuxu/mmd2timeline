@@ -165,8 +165,6 @@ namespace mmd2timeline
             // 建立人物原子数据快照
             _PersonAtomHelper = PersonAtomHelper.Snap(personAtom);
 
-            InitEyeBehavior();
-
             #region 因舞蹈动作比较大时，嘴部会变形，找到嘴部的物理网格，并将其禁用
             DAZCharacterRun characterRun = _PersonAtom.GetComponentInChildren<DAZCharacterRun>();
 
@@ -933,8 +931,6 @@ namespace mmd2timeline
                     return;
                 }
 
-                SetLookMode();
-
                 // 骨骼数组
                 GameObject[] bones = mmd._bones.Where(b => validBoneNames.ContainsKey(b.name)).ToArray();
 
@@ -1220,7 +1216,7 @@ namespace mmd2timeline
 
         public void OnDisable()
         {
-            RestoreEyeBehavior();
+
         }
 
         public void OnEnable()
@@ -1236,8 +1232,6 @@ namespace mmd2timeline
             _PersonAtomHelper = null;
             // 重置动作
             ResetPose();
-
-            RestoreEyeBehavior();
 
             if (PhysicsMeshs != null)
             {
