@@ -31,6 +31,7 @@
                     _triggerHelper.Trigger(TriggerEventHelper.TRIGGER_CAMERA_DEACTIVATED);
                 }
             };
+            RegisterBool(_cameraActiveJSON);
 
             _playStatusJSON = new JSONStorableBool($"Playing Status", false);
 
