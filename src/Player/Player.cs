@@ -300,37 +300,12 @@ namespace mmd2timeline
         /// <param name="playing"></param>
         void OnPlayStatusChanged(float progress, bool playing)
         {
+            _playStatusJSON.val = playing;
+
             if (playing)
             {
-                // 有镜头数据时，才会隐藏主UI
-                if (_CameraHelper.HasMotion)
-                {
-                    // 隐藏主HUD
-                    SuperController.singleton.HideMainHUD();
-                }
-                else
-                {
-                    //_triggerHelper.Trigger(TRIGGER_CAMERA_DEACTIVATED);
-                }
-
                 _AudioPlayHelper.SetProgress(progress, true);
-
-                //// 播放时重发一下镜头状态
-                //if (_CameraHelper.IsActive)
-                //{
-                //    _triggerHelper.Trigger(TRIGGER_CAMERA_ACTIVATED);
-                //}
-                //else
-                //{
-                //    _triggerHelper.Trigger(TRIGGER_CAMERA_DEACTIVATED);
-                //}
             }
-            else
-            {
-                _AudioPlayHelper.Stop(1);
-                //_triggerHelper.Trigger(TRIGGER_CAMERA_DEACTIVATED);
-            }
-            SetPlayButton();
         }
 
         /// <summary>
@@ -1092,44 +1067,25 @@ namespace mmd2timeline
         /// <summary>
         /// 切换播放和暂停状态
         /// </summary>
-        public bool TogglePlaying()
+        public void TogglePlaying()
         {
-            // 如果正在播放
-            if (IsPlaying)
-            {
-                _ProgressHelper.Stop(3);
-            }
-            else // 如果未在播放
-            {
-                // 开始播放
-                StartPlaying();
-            }
-
-            // 返回是否在播放状态
-            bool onPlay = SetPlayButton();
-
-            return onPlay;
+            _playStatusJSON.val = !_playStatusJSON.val;
         }
 
         /// <summary>
         /// 设置播放按钮
         /// </summary>
         /// <returns></returns>
-        private bool SetPlayButton()
+        private bool SetPlayButton(bool playing)
         {
-            var onPlaying = IsPlaying;
-
             // 如果是播放状态，切换播放按钮的文字
-            if (onPlaying)
+            if (playing)
             {
                 var sPause = Lang.Get("Pause");
 
                 if (_UIPlayButton.buttonText.text != sPause)
                 {
                     _UIPlayButton.buttonText.text = sPause;
-
-                    _playStatusJSON.val = true;
-
                     _CameraHelper.EnableNavigation(!config.CameraActive);
                 }
             }
@@ -1138,13 +1094,12 @@ namespace mmd2timeline
                 var sPlay = Lang.Get("Play");
                 if (_UIPlayButton.buttonText.text != sPlay)
                 {
-                    _playStatusJSON.val = false;
-
                     _UIPlayButton.buttonText.text = sPlay;
                     _CameraHelper.EnableNavigation(true);
                 }
             }
-            return onPlaying;
+
+            return playing;
         }
 
         /// <summary>
@@ -1152,8 +1107,7 @@ namespace mmd2timeline
         /// </summary>
         public void StopPlaying()
         {
-            _AudioPlayHelper.Stop(4);
-            _ProgressHelper.Stop(2);
+            _playStatusJSON.val = false;
         }
 
         /// <summary>
@@ -1165,6 +1119,8 @@ namespace mmd2timeline
 
             // 重置进度到开头
             _ProgressHelper.SetProgress(0f, true);
+
+            StartPlaying();
         }
 
         /// <summary>
@@ -1191,7 +1147,7 @@ namespace mmd2timeline
                 }
             }
 
-            _ProgressHelper.Play();
+            _playStatusJSON.val = true;
         }
 
         /// <summary>
