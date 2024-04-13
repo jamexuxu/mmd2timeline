@@ -69,7 +69,8 @@ namespace mmd2timeline
         public void Update()
         {
             #region 处理允许休眠的情况
-            if (config.EnableSleepWhenRunInBackground)
+            // 渲染过程中不会休眠
+            if (config.EnableSleepWhenRunInBackground && !config.IsRendering)
             {
                 if (Application.isFocused)
                 {
