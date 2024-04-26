@@ -32,6 +32,8 @@ namespace mmd2timeline
                 this.StopPlaying();
                 _readyToRenderJSON.val = false;
                 config.IsRendering = false;
+
+                _CameraHelper.RestoreEyesControl();
             }));
 
             RegisterAction(new JSONStorableAction("Refresh Audio Path", RefreshAudioPath));
@@ -63,6 +65,9 @@ namespace mmd2timeline
         IEnumerator ReadyToRendering()
         {
             _ProgressHelper.Stop(10);
+
+            // 开启视线同步
+            _CameraHelper.SyncEyesControl();
 
             yield return _MotionHelperGroup.SetPersonOff();
 

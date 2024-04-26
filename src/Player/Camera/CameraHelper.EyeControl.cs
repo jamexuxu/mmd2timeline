@@ -13,7 +13,7 @@ namespace mmd2timeline
         /// <summary>
         /// 镜头启用时同步眼睛控制
         /// </summary>
-        void SyncEyesControl()
+        public void SyncEyesControl()
         {
             #region 暂存当前的视线模式
             _lookModes.Clear();
@@ -49,7 +49,7 @@ namespace mmd2timeline
         /// <summary>
         /// 镜头停用时恢复眼睛控制
         /// </summary>
-        void RestoreEyesControl()
+        public void RestoreEyesControl()
         {
             foreach (var item in _lookModes)
             {
