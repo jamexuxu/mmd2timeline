@@ -42,6 +42,11 @@ namespace mmd2timeline
         #endregion
 
         /// <summary>
+        /// 指示UI是否正在显示
+        /// </summary>
+        bool _UIShowing = false;
+
+        /// <summary>
         /// 人物动作设置UI
         /// </summary>
         GroupUI _MotionSettingsUI;
@@ -348,6 +353,14 @@ namespace mmd2timeline
             CreateBoneRotationAdjustUI(self, rightSide);
             #endregion
 
+
+            // 强制关闭IK
+            _forceDisableIK = SetupToggle(self, "Force Disable IK", false, ForceDisableIK, rightSide);
+            _MotionSettingsUI.OuterElements.Add(_forceDisableIK);
+
+            var personSettingTitle = self.CreateTitleUINoLang($"{_PersonAtom.uid} {Lang.Get(" Settings")}", rightSide: rightSide);
+            _MotionSettingsUI.OuterElements.Add(personSettingTitle);
+
             #region 高跟设置UI
 
             //string TRIGGER_HEEL_ACTIVATED = "Heel Activated Trigger";
@@ -370,7 +383,7 @@ namespace mmd2timeline
                 //    heelDeactivatedTrigger.Trigger();
                 //}
 
-                heelSettingsGroup.RefreshView(v);
+                heelSettingsGroup.RefreshView(v && _UIShowing);
                 UpdateEnableHighHeel();
                 _MotionSettingsUI.RefreshView();
             }, rightSide);
@@ -403,10 +416,6 @@ namespace mmd2timeline
             heelSettingsGroup.Elements.Add(_HeelHeightAdjustJSON);
 
             #endregion
-
-            // 强制关闭IK
-            _forceDisableIK = SetupToggle(self, "Force Disable IK", false, ForceDisableIK, rightSide);
-            _MotionSettingsUI.OuterElements.Add(_forceDisableIK);
 
             // 关闭下半身骨骼
             _CloseLowerBonesJSON = SetupToggle(self, "Close Lower Bones", false, v =>
@@ -448,6 +457,7 @@ namespace mmd2timeline
         /// <param name="show"></param>
         internal void ShowPersonMotionUI(bool show)
         {
+            _UIShowing = show;
             _MotionSettingsUI.Show(show);
         }
 
