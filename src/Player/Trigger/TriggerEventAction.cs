@@ -412,6 +412,7 @@ namespace mmd2timeline
                         else
                         {
                             actionChooserJSON.choices = choices;
+                            actionChooserJSON.displayChoices = choices;
                             actionChooserJSON.val = value;
                         }
                     }

@@ -72,7 +72,11 @@
         /// <returns></returns>
         protected float GetDelayedProgress(float value)
         {
-            return value - _AudioSetting.TimeDelay;
+            if (_AudioSetting != null)
+            {
+                return value - _AudioSetting.TimeDelay;
+            }
+            return 0f;
         }
 
         /// <summary>

@@ -34,23 +34,23 @@ namespace mmd2timeline
         /// <summary>
         /// 进度条助手
         /// </summary>
-        ProgressHelper _ProgressHelper;
+        ProgressHelper _ProgressHelper = ProgressHelper.GetInstance();
         /// <summary>
         /// 音频播放助手
         /// </summary>
-        AudioPlayHelper _AudioPlayHelper;
+        AudioPlayHelper _AudioPlayHelper = AudioPlayHelper.GetInstance();
         /// <summary>
         /// 人物动作助手组
         /// </summary>
-        MotionHelperGroup _MotionHelperGroup;
+        MotionHelperGroup _MotionHelperGroup = MotionHelperGroup.GetInstance();
         /// <summary>
         /// 镜头动作助手
         /// </summary>
-        CameraHelper _CameraHelper;
+        CameraHelper _CameraHelper = CameraHelper.GetInstance();
         /// <summary>
         /// MMD文件夹助手
         /// </summary>
-        MMDFolderHelper _MMDFolderHelper;
+        MMDFolderHelper _MMDFolderHelper = MMDFolderHelper.GetInstance();
         #endregion
 
         /// <summary>
@@ -390,28 +390,27 @@ namespace mmd2timeline
             PersonAtoms.Clear();
 
             // 初始化动作助手组实例
-            _MotionHelperGroup = MotionHelperGroup.GetInstance();
+            //_MotionHelperGroup = MotionHelperGroup.GetInstance();
 
             // 初始化进度条助手
-            _ProgressHelper = ProgressHelper.GetInstance();
+            //_ProgressHelper = ProgressHelper.GetInstance();
             _ProgressHelper.OnProgressChanged += SyncProgress;
             _ProgressHelper.OnProgressEnded += OnProgressEnded;
             _ProgressHelper.OnPlayStatusChanged += OnPlayStatusChanged;
             _ProgressHelper.OnMaxLengthChanged += OnMaxLengthChanged;
 
             // 初始化镜头助手
-            _CameraHelper = CameraHelper.GetInstance();
             _CameraHelper.OnCameraMotionLoaded += OnCameraLoaded;
             _CameraHelper.OnCameraActivateStatusChanged += OnCameraActivateStatusChanged;
             _CameraHelper.OnFOVChanged += OnFOVChanged;
 
             //--音频播放助手--------------------------------------------------------------
-            _AudioPlayHelper = AudioPlayHelper.GetInstance();
+            //_AudioPlayHelper = AudioPlayHelper.GetInstance();
             _AudioPlayHelper.OnAudioLoaded += OnAudioLoaded;
             _AudioPlayHelper.SetVolume(config.Volume);
 
             //--MMD文件管理器--------------------------------------------------------------
-            _MMDFolderHelper = MMDFolderHelper.GetInstance();
+            //_MMDFolderHelper = MMDFolderHelper.GetInstance();
             _MMDFolderHelper.OnMMDSelected += OnMMDSelected;
             _MMDFolderHelper.OnMMDImported += OnMMDImported;
 
@@ -674,8 +673,7 @@ namespace mmd2timeline
         {
             // 初始化模型目录
             //Config.varPmxPath = MacGruber.Utils.GetPluginPath(this) + "/g2f.pmx";
-
-            base.InitScript();
+            InitScript();
 
             InitSettings();
 
@@ -1078,6 +1076,9 @@ namespace mmd2timeline
         /// <returns></returns>
         private bool SetPlayButton(bool playing)
         {
+            if (_UIPlayButton == null)
+                return false;
+
             // 如果是播放状态，切换播放按钮的文字
             if (playing)
             {

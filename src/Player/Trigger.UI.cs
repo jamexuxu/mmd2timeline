@@ -279,6 +279,7 @@ namespace mmd2timeline
 
                     var choices = SuperController.singleton.GetAtomUIDs().ToList();
                     _atomChooser.choices = choices;
+                    _atomChooser.displayChoices = choices;
 
                     if (choices.Contains(_currentTriggerEventAction.AtomUID))
                     {
@@ -686,6 +687,7 @@ namespace mmd2timeline
                             if (targetChooser != null)
                             {
                                 _valueStringChooserSetter.choices = targetChooser.choices;
+                                _valueStringChooserSetter.displayChoices = targetChooser.displayChoices;
                                 _valueStringChooserSetter.val = _currentTriggerEventAction.ValueOfString ?? targetChooser.val;
                             }
                             break;
@@ -754,6 +756,7 @@ namespace mmd2timeline
         private void RefreshTargets()
         {
             _targetChooser.choices = new List<string>();
+            _targetChooser.displayChoices = new List<string>();
             _targetChooser.valNoCallback = null;
 
             if (!string.IsNullOrEmpty(_receiverChooser.val))
@@ -761,6 +764,7 @@ namespace mmd2timeline
                 var choices = GetActionTargets(_currentTriggerEventAction.Receiver);
 
                 _targetChooser.choices = choices;
+                _targetChooser.displayChoices = choices;
 
                 if (choices.Contains(_currentTriggerEventAction.Target))
                 {
@@ -938,6 +942,7 @@ namespace mmd2timeline
         private void RefreshReceivers()
         {
             _receiverChooser.choices = new List<string>();
+            _receiverChooser.displayChoices = _receiverChooser.choices;
             _receiverChooser.valNoCallback = null;
 
             if (!string.IsNullOrEmpty(_atomChooser.val))
@@ -945,6 +950,7 @@ namespace mmd2timeline
                 List<string> choices = GetAtomReceivers(_atomChooser.val);
 
                 _receiverChooser.choices = choices;
+                _receiverChooser.displayChoices = choices;
 
                 if (choices.Contains(_currentTriggerEventAction.ReceiverName))
                 {
